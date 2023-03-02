@@ -15,7 +15,28 @@ This package may greatly improve data pipelines by enabling the following four f
 
 ## Preconditions
 
-`pybatchintory` assumes the existence of a metadata table that contains information about the data items, such as their file location and registration timestamps. Importantly, to properly generate ranges of data items constituting a single batch to be processed, `pybatchintory` requires the metadata table to provide a unique auto-increment ID column.
+`pybatchintory` assumes the existence of a metadata table that contains information about the data items, such as their file location and registration timestamps. Importantly, to properly generate ranges of data items constituting a single batch to be processed, `pybatchintory` requires the metadata table to provide a **unique auto-increment ID column**.
+
+### Example meta data source table
+
+**Schema**
+
+| Field           | Type         | Key          | Extra          |
+|----------------|--------------|--------------|---------------|
+| id              | int(11)      | PRI          | auto_increment|
+| file_location  | varchar(255) |              |               |
+| size_in_bytes   | int(11)      |              |               |
+| imported        | timestamp    |              |               |
+
+**Content**
+
+| id | file_location         | size_in_bytes | imported            |
+|----|-----------------------|---------------|---------------------|
+| 6  | /path/to/sixth/file    | 32768         | 2021-01-06 00:00:00 |
+| 7  | /path/to/seventh/file  | 65536         | 2021-01-07 00:00:00 |
+| 8  | /path/to/eighth/file   | 131072        | 2021-01-08 00:00:00 |
+| 9  | /path/to/ninth/file    | 262144        | 2021-01-09 00:00:00 |
+| 10 | /path/to/tenth/file    | 524288        | 2021-01-10 00:00:00 |
 
 ## Examplary usage
 
