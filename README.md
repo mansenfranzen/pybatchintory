@@ -1,8 +1,8 @@
 # pybatchintory
 
-`pybatchintory` represents a middleware for generating batches of data items. It enables incremental processing and provides first class support for reprocessing historical data with predictable workloads. 
+`pybatchintory` represents a middleware for batch oriented data pipelines. It enables incremental processing and provides first class support for reprocessing historical data with predictable workloads.
 
-It consumes only the meta information of data items. It does not read any of the data itself. Instead, it manages an inventory of already processed and unseen data while providing an API to interact with it.
+Only meta information of data items is consumed and processed. The actual data is not read. An **inventory** of already processed and unseen data items is managed while providing an API to interact with it.
 
 ## Reasoning
 
@@ -17,14 +17,19 @@ This package may greatly improve data pipelines by enabling the following four f
 
 `pybatchintory` assumes the existence of a metadata table that contains information about the data items, such as their file location and registration timestamps. Importantly, to properly generate ranges of data items constituting a single batch to be processed, `pybatchintory` requires the metadata table to provide a **unique auto-increment ID column**.
 
+## Assumptions
+
+- Data items are always processed chronologically according to monotonic increasing unique id
+- Only continuous ranges of ids can be processed
+
 ### Example meta data source table
 
 **Schema**
 
-| Field           | Type         | Key          | Extra          |
-|----------------|--------------|--------------|---------------|
+| Field           | Type         | Key          | Extra         |
+|-----------------|--------------|--------------|---------------|
 | id              | int(11)      | PRI          | auto_increment|
-| file_location  | varchar(255) |              |               |
+| file_location   | varchar(255) |              |               |
 | size_in_bytes   | int(11)      |              |               |
 | imported        | timestamp    |              |               |
 
@@ -47,12 +52,12 @@ This package may greatly improve data pipelines by enabling the following four f
 from pybatchintory import acquire_batch
 
 # incremental
-batch = acquire_batch(source_table="meta_data_raw_data", job_identifer="incremental_job", weight=10)
+batch = acquire_batch(job="incremental_job", weight=10)
 process_func(batch.items)
 batch.success()
 
 # backfill
-batch = acquire_batch(source_table="meta_data_raw_data", job_identifer="backfill_job", id_start=10, id_end=50, weight=10)
+batch = acquire_batch(job="backfill_job", id_start=10, id_end=50, weight=10)
 process_func(batch.items)
 batch.success()
 
@@ -60,11 +65,13 @@ batch.success()
 
 ### Multiple batches
 
+**Not yet implemented**
+
 ```python
 
 from pybatchintory import acquire_batches
 
-batches = acquire_batches(source_table="meta_data_raw_data", job_identifer="incremental_job", weight=10, batch_count=5)
+batches = acquire_batches(job="incremental_job", weight=10, iterations=5)
 for batch in batches:
    process_func(batch.items)
    batch.success()
@@ -77,7 +84,7 @@ for batch in batches:
 from pybatchintory import acquire_batch
 
 # version 1 - manual error handling
-batch = acquire_batch(source_table="meta_data_raw_data", job_identifer="incremental_job", weight=10)
+batch = acquire_batch(job="incremental_job", weight=10)
 try:
    process_func(batch.items)
    batch.success()
@@ -85,8 +92,8 @@ except Exception as e:
    batch.error(e)
    raise
 	
-# version 2 - automatic error handling
-batch = acquire_batch(source_table="meta_data_raw_data", job_identifer="incremental_job", weight=10)
+# version 2 - automatic error handling - not yet implemented
+batch = acquire_batch(job="incremental_job", weight=10)
 batch.process(func, args, kwargs)
 ```
 
@@ -108,28 +115,23 @@ Please provide a markdown representation of the following 2 database tables:
 
 #### Inventory
 
-| Column Name       | Data Type | Constraints                  |
-|-------------------|-----------|------------------------------|
-| id                | integer   | primary key, auto-increment  |
-| job_identifer     | string    |                              |
-| processing_start  | timestamp |                              |
-| processing_end    | timestamp |                              |
-| range_start       | integer   |                              |
-| range_end         | integer   |                              |
-| weight            | integer   |                              |
-| attempt           | integer   |                              |
-| status            | enum      | running, succeeded, failed   |
-
-#### Inventory_Logs
-
-| Column Name      | Data Type | Constraints                 |
-|------------------|-----------|-----------------------------|
-| id               | integer   | primary key                 |
-| attempt          | integer   | primary key                 |
-| processing_start | timestamp |                             |
-| processing_end   | timestamp |                             |
-| status           | enum      | running, succeeded, failed  |
-| logging          | string    |                             |
+| Column Name      | Type                                                  | Constraints                              |
+|------------------|-------------------------------------------------------|------------------------------------------|
+| id               | Integer                                               | primary_key=True, autoincrement=True     |
+| meta_table       | String                                                | nullable=False                           |
+| job              | String                                                | nullable=False                           |
+| job_identifier   | String                                                |                                          |
+| job_result       | JSON                                                  |                                          |
+| processing_start | DateTime                                              | nullable=False, default=TS               |
+| processing_end   | DateTime                                              |                                          |
+| meta_id_start    | Integer                                               | nullable=False                           |
+| meta_id_end      | Integer                                               | nullable=False                           |
+| weight           | Integer                                               |                                          |
+| count            | Integer                                               | nullable=False                           |
+| attempt          | Integer                                               | nullable=False, default=1                |
+| status           | Enum(*cfg.settings.INVENTORY_STATUS_ENUMS)            | nullable=False, default="running"        |
+| logging          | String                                                |                                          |
+| config           | JSON                                                  | nullable=False                           |
 
 
 ## Poem (thanks to chatGPT)
