@@ -29,8 +29,9 @@ ipykernel = [
 pytest = "^7.2.2"
 
 
-[tool.poetry.group.postresql.dependencies]
-psycopg2 = "^2.9.5"
+
+[tool.poetry.group.postgresql.dependencies]
+psycopg2-binary = "^2.9.5"
 
 [build-system]
 requires = ["poetry-core"]
