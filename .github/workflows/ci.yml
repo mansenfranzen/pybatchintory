@@ -3,28 +3,62 @@ name: continuous integration
 on: [push, pull_request, release]
 
 jobs:
-  test:
+  test-sqlite:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ windows-latest, ubuntu-latest, macos-latest ]
-        python-version: [ 3.7, 3.9 ]
+        python-version: [ 3.7, 3.8, 3.9 ]
 
     steps:
     - uses: actions/checkout@v3
 
+    - name: Install poetry
+      run: pipx install poetry==1.4.0
+
     - uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
-
-    - name: Install Poetry
-      uses: abatilo/actions-poetry@v2.3.0
-      with:
-        poetry-version: 1.4.0
+        cache: 'poetry'
 
     - name: Install dependencies
       run: poetry install
 
     - name: Run tests
       run: poetry run pytest
+
+  test-postgres:
+    runs-on: ${{ matrix.os }}
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+          POSTGRES_HOST: localhost
+        ports:
+          - 5432:5432
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-latest, ubuntu-latest, macos-latest ]
+        python-version: [ 3.7, 3.8, 3.9 ]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install poetry
+      run: pipx install poetry==1.4.0
+
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'poetry'
+
+    - name: Install dependencies
+      run: poetry install
+
+    - name: Run tests
+      run: poetry run pytest --db postgresql

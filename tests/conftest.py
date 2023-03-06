@@ -16,6 +16,7 @@ INVENTORY_TABLE_NAME = "test_inventory"
 INVENTORY_LOGS_TABLE_NAME = "test_inventory_logs"
 INVENTORY_CONN_SCHEMA = "test_pybatchintory"
 
+POSTGRESQL_URL = "postgresql+psycopg2://postgres:postgres@localhost:5432/postgres"
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -34,7 +35,7 @@ def conn_inventory(pytestconfig, tmp_path):
         filename = tmp_path.joinpath("test_backend.db")
         return f"sqlite:///{filename}"
     elif db_param == "postgresql":
-        return "postgresql+psycopg2://postgres:postgres@localhost:5432/postgres"
+        return POSTGRESQL_URL
     else:
         raise NotImplementedError
 
@@ -46,7 +47,7 @@ def conn_meta(pytestconfig, tmp_path):
         filename = tmp_path.joinpath("test_meta.db")
         return f"sqlite:///{filename}"
     elif db_param == "postgresql":
-        return "postgresql+psycopg2://docker:docker@localhost:5432/docker"
+        return POSTGRESQL_URL
     else:
         raise NotImplementedError
 
