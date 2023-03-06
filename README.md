@@ -43,6 +43,28 @@ This package may greatly improve data pipelines by enabling the following four f
 | 9  | /path/to/ninth/file    | 262144        | 2021-01-09 00:00:00 |
 | 10 | /path/to/tenth/file    | 524288        | 2021-01-10 00:00:00 |
 
+## Usage
+
+### Configuration
+
+SqlAlchemy connection strings for inventory and meta table need to be 
+provided. These can be provided via environment variables as follows:
+
+```bash
+export INVENTORY_CONN="postgresql+psycopg2://user:password@host:port/dbname"
+export META_CONN="postgresql+psycopg2://user:password@host:port/dbname"
+```
+
+### Invocation
+
+from pybatchintory import acquire_batch
+
+# incremental
+batch = acquire_batch(job="incremental_job", weight=10)
+process_func(batch.items)
+batch.success()
+
+
 ## Examplary usage
 
 ### Single batch - incremental/backfill with weight

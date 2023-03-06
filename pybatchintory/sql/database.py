@@ -23,8 +23,8 @@ class DatabaseConfiguration(BaseModel):
         arbitrary_types_allowed = True
 
 
-def initialize(engine_inventory: Optional[Engine],
-               engine_meta: Optional[Engine]) -> DatabaseConfiguration:
+def initialize(engine_inventory: Optional[Engine] = None,
+               engine_meta: Optional[Engine] = None) -> DatabaseConfiguration:
     metadata_inventory = MetaData()
     metadata_meta = MetaData()
 

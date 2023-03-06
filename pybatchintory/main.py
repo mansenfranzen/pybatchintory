@@ -6,14 +6,13 @@ from pybatchintory.sql import crud
 from pybatchintory import validate
 
 
-def acquire_batch(meta_table:str,
+def acquire_batch(meta_table: str,
                   job: str,
                   job_identifier: Optional[str] = None,
-                  id_min: int = 0,
-                  id_max: Optional[int] = None,
+                  batch_id_min: int = 0,
+                  batch_id_max: Optional[int] = None,
                   batch_weight: Optional[float] = None,
                   batch_count: Optional[int] = None) -> Optional[Batch]:
-
     id_inventory_max = crud.read_max_meta_id_from_inventory(
         meta_table=meta_table,
         job=job
@@ -22,7 +21,7 @@ def acquire_batch(meta_table:str,
 
     checks = [
         validate.id_min_greater_equals_max_meta_id(
-            id_user_min=id_min,
+            id_user_min=batch_id_min,
             id_meta_max=id_meta_max),
         validate.max_inventory_id_greater_equals_max_meta_id(
             id_inventory_max=id_inventory_max,
@@ -32,11 +31,11 @@ def acquire_batch(meta_table:str,
     if any(checks):
         return
 
-    id_min = max(id_min, id_inventory_max + 1)
-    id_range = crud.read_meta_id_range_from_meta(
+    batch_id_min = max(batch_id_min, id_inventory_max + 1)
+    batch_id_range = crud.read_meta_id_range_from_meta(
         meta_table=meta_table,
-        id_min=id_min,
-        id_max=id_max,
+        id_min=batch_id_min,
+        id_max=batch_id_max,
         count=batch_count,
         weight=batch_weight
     )
@@ -45,14 +44,14 @@ def acquire_batch(meta_table:str,
         meta_table=meta_table,
         job=job,
         job_identifier=job_identifier,
-        id_min=id_min,
-        id_max=id_max,
+        id_min=batch_id_min,
+        id_max=batch_id_max,
         batch_weight=batch_weight,
         batch_count=batch_count,
         id_inventory_max=id_inventory_max,
         id_meta_max=id_meta_max
     )
 
-    batch = Batch(id_range=id_range, batch_cfg=batch_cfg)
+    batch = Batch(id_range=batch_id_range, batch_cfg=batch_cfg)
     batch.acquire()
     return batch

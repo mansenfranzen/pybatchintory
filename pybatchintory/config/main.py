@@ -11,8 +11,7 @@ ENV_NAME_CONFIG_FILE = "PYBATCHINTORY_ENV_FILE"
 
 
 def configure(dot_env: Optional[str] = None,
-              settings: Optional[Dict] = None,
-              initialize_db: bool = True):
+              settings: Optional[Dict] = None):
     """Globally configure package wide settings which overwrites default
     settings of `pybatchintory.config.values`.
 
@@ -57,5 +56,4 @@ def configure(dot_env: Optional[str] = None,
         raise ValueError("No configuration settings or env file provided")
 
     config.settings = values
-    if initialize_db:
-        sql.db = sql.initialize()
+    sql.db = sql.initialize()

@@ -158,11 +158,8 @@ def configuration(schema,
             INVENTORY_CONN_SCHEMA=schema,
             INVENTORY_TABLE_NAME=INVENTORY_TABLE_NAME,
             META_CONN=conn_meta,
-            META_CONN_SCHEMA=schema,
-            META_TABLE_NAME=META_TABLE_NAME,
             META_COLS={"uid": "id", "item": "item", "weight": "weight"},
-        ),
-        initialize_db=False
+        )
     )
 
     sql.db = sql.initialize(engine_inventory=engine_inventory,

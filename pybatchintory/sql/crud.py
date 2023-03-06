@@ -8,7 +8,7 @@ from pybatchintory import sql
 from pybatchintory.sql import helper
 from pybatchintory import config as cfg
 from pybatchintory.logging import logger
-from pybatchintory.models import IdRange
+from pybatchintory.models import BatchIdRange
 from pybatchintory.sql.reflection import autoload_meta_table
 
 
@@ -103,7 +103,7 @@ def read_meta_id_range_from_meta(
         id_max: Optional[int] = None,
         weight: Optional[float] = None,
         count: Optional[int] = None
-) -> IdRange:
+) -> BatchIdRange:
     """Retrieve a range of meta ids.
 
     """
@@ -136,13 +136,13 @@ def read_meta_id_range_from_meta(
 
     # check for edge case of empty result set
     if any(result):
-        return IdRange(**result._asdict())
+        return BatchIdRange(**result._asdict())
     else:
         return _read_single_next_id_from_meta(meta_table, id_min)
 
 
 def _read_single_next_id_from_meta(meta_table: str,
-                                   id_min: int) -> IdRange:
+                                   id_min: int) -> BatchIdRange:
     """Fallback if weight constraint does not even allow a single data item
     to be returned.
 
@@ -165,7 +165,7 @@ def _read_single_next_id_from_meta(meta_table: str,
     query = sa.select(*select).where(c_id.in_(filter_subquery))
     with sql.db.engine_meta.begin() as conn:
         result = conn.execute(query).fetchone()
-        return IdRange(**result._asdict())
+        return BatchIdRange(**result._asdict())
 
 
 def create_row_in_inventory(values: Dict, conn: Connection) -> int:

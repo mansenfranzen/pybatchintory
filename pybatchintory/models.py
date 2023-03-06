@@ -3,9 +3,9 @@ from typing import Optional
 from pydantic.main import BaseModel
 
 
-class IdRange(BaseModel):
-    """Resembles the computed item id range which
-    constitutes a batch of data items.
+class BatchIdRange(BaseModel):
+    """Resembles the computed item id range which constitutes a batch of
+    data items.
 
     """
 
@@ -26,8 +26,8 @@ class BatchConfig(BaseModel):
     meta_table: str
     job: str
     job_identifier: Optional[str]
-    id_min: int = 0
-    id_max: Optional[int] = None
+    batch_id_min: int = 0
+    batch_id_max: Optional[int] = None
     batch_weight: Optional[float] = None
     batch_count: Optional[int] = None
     id_inventory_max: int

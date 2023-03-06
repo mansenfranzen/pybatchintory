@@ -38,12 +38,6 @@ class Settings(BaseSettings):
     are external to `pybatchintory` with read only access. If not given, is 
     assumes it has the same connection string as `CONN_BACKEND`."""
 
-    META_CONN_SCHEMA: Optional[str]
-    """Provide schema for meta table."""
-
-    META_TABLE_NAME: str
-    """Name of meta data table."""
-
     META_COLS: MetaTableColumns = MetaTableColumns()
     """Define the column name mappings for the meta data table."""
 
