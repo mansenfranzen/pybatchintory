@@ -134,7 +134,6 @@ def df_meta(schema, engine_meta):
 
     kwargs = dict(con=engine_meta,
                   if_exists="replace",
-                  schema=schema,
                   index=False)
 
     if schema:
