@@ -10,7 +10,7 @@ readme = "README.md"
 python = ">=3.7,<4"
 sqlalchemy = [
      {version = "<=1.4", python = ">=3.7,<3.8"},
-     {version = ">1.4", python = ">=3.8,<4"}
+     {version = "<=1.4", python = ">=3.8,<4"}
   ]
 pandas = [
      {version = "<1.4", python = ">=3.7,<3.8"},

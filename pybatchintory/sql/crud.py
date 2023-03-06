@@ -131,7 +131,7 @@ def read_meta_id_range_from_meta(
 
     # check for edge case of empty result set
     if any(result):
-        return IdRange.from_orm(result)
+        return IdRange(**result._asdict())
     else:
         return _read_single_next_id_from_meta(id_min)
 
@@ -159,7 +159,7 @@ def _read_single_next_id_from_meta(id_min) -> IdRange:
     query = sa.select(*select).where(c_id.in_(filter_subquery))
     with sql.db.engine_meta.begin() as conn:
         result = conn.execute(query).fetchone()
-        return IdRange.from_orm(result)
+        return IdRange(**result._asdict())
 
 
 def create_row_in_inventory(values: Dict, conn: Connection) -> int:

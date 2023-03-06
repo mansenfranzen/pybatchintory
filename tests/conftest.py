@@ -79,7 +79,7 @@ def engine_inventory(conn_inventory):
 
     # support schemas in sqlite
     if engine.dialect.name == "sqlite":
-        with engine.connect() as conn:
+        with engine.begin() as conn:
             stmt = text(f"ATTACH ':memory:' AS {INVENTORY_CONN_SCHEMA};")
             conn.execute(stmt)
 
