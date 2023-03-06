@@ -20,7 +20,7 @@ class Settings(BaseSettings):
 
     """
 
-    INVENTORY_CONN: SecretStr
+    INVENTORY_CONN: SecretStr = "sqlite://"
     """Represents SqlAlchemy connection string for the inventory backend 
     tables used by `pybatchintory` with read/write access."""
 
@@ -44,5 +44,9 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     """Enable debug mode to see more information such as generated SQL strings.
     """
+
+    class Config:
+        case_sensitive = False
+        env_prefix = 'pybatchintory_'
 
 

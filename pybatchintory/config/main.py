@@ -18,12 +18,12 @@ def configure(dot_env: Optional[str] = None,
     Configuration settings are evaluated in the following precedence:
 
     1. Values passed as `settings` parameter to `configure` function.
-    2. Values extracted from a given `dot_env` file via `configure` function.
-    3. Values parsed from dot-env file that is specified via the
-       `PYBATCHINTORY_ENV_FILE` environment variable.
-    4. Specific values provided via environment variables with correct
+    2. Specific values provided via environment variables with correct
        naming schema. For example, `BACKEND_CONN` can be specified via the
        environment variable `PYBATCHINVENTORY_BACKEND_CONN`.
+    3. Values extracted from a given `dot_env` file via `configure` function.
+    4. Values parsed from dot-env file that is specified via the
+       `PYBATCHINTORY_ENV_FILE` environment variable.
     5. Default values being specified in the settings source class.
 
     Parameters
@@ -53,7 +53,7 @@ def configure(dot_env: Optional[str] = None,
         values = Settings(**settings)
 
     else:
-        raise ValueError("No configuration settings or env file provided")
+        values = Settings()
 
     config.settings = values
     sql.db = sql.initialize()

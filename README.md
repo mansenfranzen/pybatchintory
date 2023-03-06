@@ -50,56 +50,77 @@ This package may greatly improve data pipelines by enabling the following four f
 SqlAlchemy connection strings for inventory and meta table need to be 
 provided. These can be provided via environment variables as follows:
 
+#### Environment variables
+
 ```bash
-export INVENTORY_CONN="postgresql+psycopg2://user:password@host:port/dbname"
-export META_CONN="postgresql+psycopg2://user:password@host:port/dbname"
+export PYBATCHINTORY_INVENTORY_CONN="postgresql+psycopg2://user:password@host:port/dbname"
+export PYBATCHINTORY_META_CONN="postgresql+psycopg2://user:password@host:port/dbname"
+```
+
+#### Dot-env file
+You may also provide a path to a dot-env file via an environment variable:
+
+```bash
+export PYBATCHINTORY_ENV_FILE="PATH_TO_DOT_ENV_FILE"
+```
+
+#### Programmatically
+
+In addition, you may set a dot-env file and explicit settings programmatically:
+
+```python
+from pybatchintory import configure
+
+configure(dot_env="PATH_TO_DOT_ENV_FILE", 
+		  settings=dict(INVENTORY_CONN="CONN_STRING"))
 ```
 
 ### Invocation
 
-from pybatchintory import acquire_batch
-
-# incremental
-batch = acquire_batch(job="incremental_job", weight=10)
-process_func(batch.items)
-batch.success()
-
-
-## Examplary usage
-
-### Single batch - incremental/backfill with weight
+#### Incremental with predictable workload
 
 ```python
-
 from pybatchintory import acquire_batch
 
-# incremental
-batch = acquire_batch(job="incremental_job", weight=10)
+batch = acquire_batch(meta_table="meta_table", 
+					  job="incremental_job", 
+					  batch_weight=100)
 process_func(batch.items)
 batch.success()
-
-# backfill
-batch = acquire_batch(job="backfill_job", id_start=10, id_end=50, weight=10)
-process_func(batch.items)
-batch.success()
-
 ```
 
-### Multiple batches
+#### Backfill with predictable workload
+
+```python
+from pybatchintory import acquire_batch
+
+batch = acquire_batch(meta_table="meta_table", 
+					  job="backfill_job", 
+					  batch_id_min=20,
+					  batch_id_max=80,
+					  batch_weight=100)
+process_func(batch.items)
+batch.success()
+```
+
+#### Multiple batches
 
 **Not yet implemented**
 
 ```python
-
 from pybatchintory import acquire_batches
 
-batches = acquire_batches(job="incremental_job", weight=10, iterations=5)
+batches = acquire_batches(meta_table="meta_table",
+						  job="incremental_job",
+						  batch_weight=10,
+						  iterations=5)
+
 for batch in batches:
-   process_func(batch.items)
-   batch.success()
+	process_func(batch.items)
+	batch.success()
 ```
 
-### Error handling
+#### Error handling
 
 ```python
 
@@ -131,11 +152,7 @@ batch.process(func, args, kwargs)
 - Provide filter condition for meta data source table to select only relevant subset of data items
 
 
-### Backend tables
-
-Please provide a markdown representation of the following 2 database tables:
-
-#### Inventory
+### Inventory table
 
 | Column Name      | Type                                                  | Constraints                              |
 |------------------|-------------------------------------------------------|------------------------------------------|
@@ -143,13 +160,13 @@ Please provide a markdown representation of the following 2 database tables:
 | meta_table       | String                                                | nullable=False                           |
 | job              | String                                                | nullable=False                           |
 | job_identifier   | String                                                |                                          |
-| job_result       | JSON                                                  |                                          |
+| job_result_item  | JSON                                                  |                                          |
 | processing_start | DateTime                                              | nullable=False, default=TS               |
 | processing_end   | DateTime                                              |                                          |
-| meta_id_start    | Integer                                               | nullable=False                           |
-| meta_id_end      | Integer                                               | nullable=False                           |
-| weight           | Integer                                               |                                          |
-| count            | Integer                                               | nullable=False                           |
+| batch_id_start   | Integer                                               | nullable=False                           |
+| batch_id_end     | Integer                                               | nullable=False                           |
+| batch_weight     | Integer                                               |                                          |
+| batch_count      | Integer                                               | nullable=False                           |
 | attempt          | Integer                                               | nullable=False, default=1                |
 | status           | Enum(*cfg.settings.INVENTORY_STATUS_ENUMS)            | nullable=False, default="running"        |
 | logging          | String                                                |                                          |

@@ -1,6 +1,5 @@
+from typing import Optional
+
 from pybatchintory.config.settings import Settings
 
-settings = Settings(
-    INVENTORY_CONN="sqlite:///backend.db",
-    META_CONN="sqlite:///meta.db"
-)
+settings: Optional[Settings] = None
