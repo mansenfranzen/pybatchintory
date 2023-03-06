@@ -35,12 +35,11 @@ def read_max_meta_id_from_inventory(meta_table: str,
 
     # support as part of transaction or separate transaction
     if conn:
-        result = conn.execute(stmt)
+        max_meta_id = conn.execute(stmt).scalar()
     else:
         with sql.db.engine_inventory.begin() as conn:
-            result = conn.execute(stmt)
+            max_meta_id = conn.execute(stmt).scalar()
 
-    max_meta_id = result.scalar()
     logger.info(f"max_meta_id_from_inventory: {max_meta_id}")
     return max_meta_id
 

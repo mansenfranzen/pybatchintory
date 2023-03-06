@@ -46,6 +46,14 @@ def schema(pytestconfig):
         return "test_pybatchintory"
 
 
+@pytest.fixture
+def meta_table(schema):
+    if schema:
+        return META_TABLE_NAME_SCHEMA
+    else:
+        return META_TABLE_NAME
+
+
 @pytest.fixture(scope="function")
 def conn_inventory(pytestconfig, tmp_path):
     db_param = pytestconfig.getoption("db")
@@ -79,10 +87,11 @@ def engine_inventory(schema, conn_inventory):
     engine = create_engine(conn_inventory)
 
     # support schemas in sqlite
-    if (engine.dialect.name == "sqlite") and schema:
-        with engine.begin() as conn:
-            stmt = text(f"ATTACH ':memory:' AS {schema};")
-            conn.execute(stmt)
+    if engine.dialect.name == "sqlite":
+        if schema:
+            with engine.begin() as conn:
+                stmt = text(f"ATTACH ':memory:' AS {schema};")
+                conn.execute(stmt)
 
     else:
         with engine.begin() as conn:
@@ -100,10 +109,11 @@ def engine_meta(schema, conn_meta):
 
     engine = create_engine(conn_meta)
 
-    if (engine.dialect.name == "sqlite") and schema:
-        with engine.begin() as conn:
-            stmt = text(f"ATTACH ':memory:' AS {schema};")
-            conn.execute(stmt)
+    if engine.dialect.name == "sqlite":
+        if schema:
+            with engine.begin() as conn:
+                stmt = text(f"ATTACH ':memory:' AS {schema};")
+                conn.execute(stmt)
     else:
         with engine.begin() as conn:
             if not conn.dialect.has_schema(conn, schema):
@@ -125,15 +135,15 @@ def df_meta(schema, engine_meta):
 
 
 @pytest.fixture
-def df_inventory(schema, engine_inventory):
+def df_inventory(schema, meta_table, engine_inventory):
     table = recreate_inventory_table(name=INVENTORY_TABLE_NAME,
                                      engine=engine_inventory,
                                      schema=schema)
-
+    test_data_inventory = test_data.inventory_data(meta_table)
     with engine_inventory.begin() as conn:
-        conn.execute(sa.insert(table), test_data.INVENTORY)
+        conn.execute(sa.insert(table), test_data_inventory)
 
-    return pd.DataFrame(test_data.INVENTORY)
+    return pd.DataFrame(test_data_inventory)
 
 
 @pytest.fixture

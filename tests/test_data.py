@@ -5,7 +5,8 @@ def ts(timestamp: str) -> datetime.datetime:
     return datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
 
 
-INVENTORY = [{'meta_table': 'test_pybatchintory.test_meta',
+def inventory_data(table_name):
+    return [{'meta_table': table_name,
               'job': 'j1',
               'job_identifier': 'j1_1',
               'job_result_item': '{file: 1}',
@@ -19,7 +20,7 @@ INVENTORY = [{'meta_table': 'test_pybatchintory.test_meta',
               'status': 'succeeded',
               'config': {"foo": "bar"},
               'logging': 'log1'},
-             {'meta_table': 'test_pybatchintory.test_meta',
+             {'meta_table': table_name,
               'job': 'j2',
               'job_identifier': 'j2_1',
               'job_result_item': '{file: 2}',
