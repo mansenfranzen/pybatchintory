@@ -6,15 +6,19 @@ from pybatchintory.sql import crud
 from pybatchintory import validate
 
 
-def acquire_batch(job: str,
+def acquire_batch(meta_table:str,
+                  job: str,
                   job_identifier: Optional[str] = None,
                   id_min: int = 0,
                   id_max: Optional[int] = None,
                   batch_weight: Optional[float] = None,
                   batch_count: Optional[int] = None) -> Optional[Batch]:
 
-    id_inventory_max = crud.read_max_meta_id_from_inventory(job=job)
-    id_meta_max = crud.read_max_meta_id_from_meta()
+    id_inventory_max = crud.read_max_meta_id_from_inventory(
+        meta_table=meta_table,
+        job=job
+    )
+    id_meta_max = crud.read_max_meta_id_from_meta(meta_table=meta_table)
 
     checks = [
         validate.id_min_greater_equals_max_meta_id(
@@ -30,6 +34,7 @@ def acquire_batch(job: str,
 
     id_min = max(id_min, id_inventory_max + 1)
     id_range = crud.read_meta_id_range_from_meta(
+        meta_table=meta_table,
         id_min=id_min,
         id_max=id_max,
         count=batch_count,
@@ -37,6 +42,7 @@ def acquire_batch(job: str,
     )
 
     batch_cfg = BatchConfig(
+        meta_table=meta_table,
         job=job,
         job_identifier=job_identifier,
         id_min=id_min,

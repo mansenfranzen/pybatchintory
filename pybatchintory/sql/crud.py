@@ -9,9 +9,11 @@ from pybatchintory.sql import helper
 from pybatchintory import config as cfg
 from pybatchintory.logging import logger
 from pybatchintory.models import IdRange
+from pybatchintory.sql.reflection import autoload_meta_table
 
 
-def read_max_meta_id_from_inventory(job: str,
+def read_max_meta_id_from_inventory(meta_table: str,
+                                    job: str,
                                     conn: Optional[Connection] = None) -> int:
     """Given a job, retrieve the highest item id that has been previously
     processed.
@@ -21,11 +23,11 @@ def read_max_meta_id_from_inventory(job: str,
     inventory = sql.db.table_inventory
 
     # select
-    max_val = sa.func.max(inventory.c.meta_id_end)
+    max_val = sa.func.max(inventory.c.batch_id_end)
     value_or_zero = sa.func.coalesce(max_val, 0)
 
     # where
-    where = sa.and_(inventory.c.meta_table == cfg.settings.META_TABLE_NAME,
+    where = sa.and_(inventory.c.meta_table == meta_table,
                     inventory.c.job == job)
 
     # query
@@ -43,12 +45,12 @@ def read_max_meta_id_from_inventory(job: str,
     return max_meta_id
 
 
-def read_max_meta_id_from_meta() -> int:
+def read_max_meta_id_from_meta(meta_table: str) -> int:
     """Retrieve the highest item id from meta table.
 
     """
 
-    t_meta = sql.db.table_meta
+    t_meta = autoload_meta_table(meta_table)
     c_id = t_meta.c[cfg.settings.META_COLS.uid]
 
     # select
@@ -65,14 +67,15 @@ def read_max_meta_id_from_meta() -> int:
     return max_meta_id
 
 
-def _build_meta_id_base_cte(id_min: int,
+def _build_meta_id_base_cte(meta_table: str,
+                            id_min: int,
                             id_max: Optional[int] = None) -> CTE:
     """Build CTE for meta ia base information regarding rank and cumulative
     sum for weight.
 
     """
     # get table/column objects for meta table
-    t_meta = sql.db.table_meta
+    t_meta = autoload_meta_table(meta_table)
     c_id = t_meta.c[cfg.settings.META_COLS.uid]
     weight_col = cfg.settings.META_COLS.weight
 
@@ -96,6 +99,7 @@ def _build_meta_id_base_cte(id_min: int,
 
 
 def read_meta_id_range_from_meta(
+        meta_table: str,
         id_min: int,
         id_max: Optional[int] = None,
         weight: Optional[float] = None,
@@ -106,7 +110,9 @@ def read_meta_id_range_from_meta(
     """
 
     # common table expression / subquery
-    cte = _build_meta_id_base_cte(id_min=id_min, id_max=id_max)
+    cte = _build_meta_id_base_cte(meta_table=meta_table,
+                                  id_min=id_min,
+                                  id_max=id_max)
 
     # cte where
     cte_where = []
@@ -122,8 +128,8 @@ def read_meta_id_range_from_meta(
             sa.func.max(cte.c.count).label("count"),
             sa.func.max(cte.c.weight).label("weight")
         )
-            .where(sa.and_(*cte_where))
-            .select_from(cte)
+        .where(sa.and_(*cte_where))
+        .select_from(cte)
     )
 
     with sql.db.engine_meta.begin() as conn:
@@ -133,16 +139,17 @@ def read_meta_id_range_from_meta(
     if any(result):
         return IdRange(**result._asdict())
     else:
-        return _read_single_next_id_from_meta(id_min)
+        return _read_single_next_id_from_meta(meta_table, id_min)
 
 
-def _read_single_next_id_from_meta(id_min) -> IdRange:
+def _read_single_next_id_from_meta(meta_table: str,
+                                   id_min: int) -> IdRange:
     """Fallback if weight constraint does not even allow a single data item
     to be returned.
 
     """
 
-    t_meta = sql.db.table_meta
+    t_meta = autoload_meta_table(meta_table)
     c_id = t_meta.c[cfg.settings.META_COLS.uid]
     weight_col = cfg.settings.META_COLS.weight
 
@@ -173,7 +180,7 @@ def create_row_in_inventory(values: Dict, conn: Connection) -> int:
     return result.inserted_primary_key[0]
 
 
-def update_row_in_inventory(primary_key, values: Dict):
+def update_row_in_inventory(primary_key: int, values: Dict):
     """Updates row in inventory table given primary key.
 
     """
@@ -186,17 +193,19 @@ def update_row_in_inventory(primary_key, values: Dict):
         conn.execute(stmt)
 
 
-def read_files_via_id_range_from_meta(id_min: int, id_max: int) -> List[str]:
-    """Loads files from meta table for given id range.
+def read_items_via_id_range_from_meta(meta_table: str,
+                                      id_min: int,
+                                      id_max: int) -> List[str]:
+    """Loads items from meta table for given id range.
 
     """
 
-    t_meta = sql.db.table_meta
+    t_meta = autoload_meta_table(meta_table)
     c_id = t_meta.c[cfg.settings.META_COLS.uid]
-    c_file = t_meta.c[cfg.settings.META_COLS.file]
+    c_item = t_meta.c[cfg.settings.META_COLS.item]
 
     where = sa.and_(c_id >= id_min, c_id <= id_max)
-    stmt = sa.select(c_file).where(where)
+    stmt = sa.select(c_item).where(where)
     with sql.db.engine_meta.begin() as conn:
         result = conn.execute(stmt).fetchall()
         return helper.single_column_result_to_list(result)

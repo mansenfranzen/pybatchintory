@@ -5,8 +5,7 @@ from sqlalchemy.engine.base import Engine
 from sqlalchemy import create_engine, MetaData, Table
 
 from pybatchintory import config as cfg
-from pybatchintory.sql.models import generate_inventory_table, \
-    generate_meta_table
+from pybatchintory.sql.models import generate_inventory_table
 
 
 class DatabaseConfiguration(BaseModel):
@@ -15,7 +14,6 @@ class DatabaseConfiguration(BaseModel):
     metadata_inventory: MetaData
     metadata_meta: MetaData
     table_inventory: Table
-    table_meta: Table
 
     def initialize_metadata_backend(self):
         self.metadata_inventory.create_all(bind=self.engine_inventory,
@@ -39,15 +37,12 @@ def initialize(engine_inventory: Optional[Engine],
         schema=cfg.settings.INVENTORY_CONN_SCHEMA
     )
 
-    table_meta = generate_meta_table(engine_meta, metadata_meta)
-
     return DatabaseConfiguration(
         engine_inventory=engine_inventory,
         engine_meta=engine_meta,
         metadata_inventory=metadata_inventory,
         metadata_meta=metadata_meta,
         table_inventory=table_inventory,
-        table_meta=table_meta
     )
 
 

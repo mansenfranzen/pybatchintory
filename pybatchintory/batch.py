@@ -28,6 +28,7 @@ class Batch:
 
     def _check_concurrent_change(self, conn: Connection):
         id_inventory_max = crud.read_max_meta_id_from_inventory(
+            meta_table=self.batch_cfg.meta_table,
             job=self.batch_cfg.job,
             conn=conn
         )
@@ -39,10 +40,10 @@ class Batch:
         return {"job": self.batch_cfg.job,
                 "job_identifier": self.batch_cfg.job_identifier,
                 "meta_table": cfg.settings.META_TABLE_NAME,
-                "meta_id_start": self.id_range.id_min,
-                "meta_id_end": self.id_range.id_max,
-                "count": self.id_range.count,
-                "weight": self.id_range.weight,
+                "batch_id_start": self.id_range.id_min,
+                "batch_id_end": self.id_range.id_max,
+                "batch_count": self.id_range.count,
+                "batch_weight": self.id_range.weight,
                 "config": self.batch_cfg.dict()}
 
     def _acquire_batch_in_inventory(self, conn: Connection):
@@ -56,7 +57,8 @@ class Batch:
             self._check_concurrent_change(conn)
             self._acquire_batch_in_inventory(conn)
 
-        self.items = crud.read_files_via_id_range_from_meta(
+        self.items = crud.read_items_via_id_range_from_meta(
+            meta_table=self.batch_cfg.meta_table,
             id_min=self.id_range.id_min,
             id_max=self.id_range.id_max)
 
@@ -69,7 +71,7 @@ class Batch:
         self.success = success
 
         values = {"status": "succeeded" if success else "failed",
-                  "job_result": result,
+                  "job_result_item": result,
                   "logging": logging,
                   "processing_end": sa.func.current_timestamp()}
 

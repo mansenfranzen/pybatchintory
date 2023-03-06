@@ -23,6 +23,7 @@ class BatchConfig(BaseModel):
 
     """
 
+    meta_table: str
     job: str
     job_identifier: Optional[str]
     id_min: int = 0

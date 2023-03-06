@@ -3,15 +3,18 @@ from typing import Dict
 import pandas as pd
 import pytest
 from packaging import version
-from sqlalchemy import create_engine, MetaData, text, Table
+from sqlalchemy import create_engine, text
 import sqlalchemy as sa
 
 from pybatchintory import configure, sql
-from pybatchintory.sql.models import generate_inventory_table
+from pybatchintory.sql.testing import recreate_inventory_table, \
+    recreate_meta_table
 
 from . import test_data
 
+SCHEMA = "test_pybatchintory"
 META_TABLE_NAME = "test_meta"
+META_TABLE_NAME_SCHEMA = f"{SCHEMA}.{META_TABLE_NAME}"
 INVENTORY_TABLE_NAME = "test_inventory"
 INVENTORY_LOGS_TABLE_NAME = "test_inventory_logs"
 
@@ -30,6 +33,10 @@ def pytest_addoption(parser):
 
 @pytest.fixture
 def schema(pytestconfig):
+    """Using seperate test schema does not work with the combination of sqlite
+    and sqlalchemy. Hence, it needs to be handled separately.
+
+    """
     sqlite_used = pytestconfig.getoption("db") == "sqlite"
     incompatible_sa = version.parse(sa.__version__) < version.Version("2.0.0")
 
@@ -63,23 +70,6 @@ def conn_meta(pytestconfig, tmp_path):
         raise NotImplementedError
 
 
-def recreate_inventory_table(engine_inventory, schema):
-    """Removes existing table and creates new inventory table.
-
-    """
-
-    metadata = MetaData()
-
-    generate_inventory_table(
-        name=INVENTORY_TABLE_NAME,
-        metadata=metadata,
-        schema=schema
-    )
-
-    metadata.drop_all(bind=engine_inventory)
-    metadata.create_all(bind=engine_inventory, checkfirst=True)
-
-
 @pytest.fixture(scope="function")
 def engine_inventory(schema, conn_inventory):
     """Create engine and create schema/tables if not exist.
@@ -98,8 +88,6 @@ def engine_inventory(schema, conn_inventory):
         with engine.begin() as conn:
             if not conn.dialect.has_schema(conn, schema):
                 conn.execute(sa.schema.CreateSchema(schema))
-
-    recreate_inventory_table(engine, schema)
 
     return engine
 
@@ -126,38 +114,33 @@ def engine_meta(schema, conn_meta):
 
 @pytest.fixture
 def df_meta(schema, engine_meta):
-    df_meta = pd.DataFrame({
-        "id": range(10),
-        "file": [f"f{x}" for x in range(10)],
-        "size": range(0, 20, 2)
-    })
+    table = recreate_meta_table(name=META_TABLE_NAME,
+                                engine=engine_meta,
+                                schema=schema)
 
-    kwargs = dict(con=engine_meta,
-                  if_exists="replace",
-                  index=False)
+    with engine_meta.begin() as conn:
+        conn.execute(sa.insert(table), test_data.META)
 
-    if schema:
-        kwargs["schema"] = schema
-
-    df_meta.to_sql(META_TABLE_NAME, **kwargs)
-    return df_meta
+    return pd.DataFrame(test_data.META)
 
 
 @pytest.fixture
 def df_inventory(schema, engine_inventory):
-    table = Table(INVENTORY_TABLE_NAME,
-                  MetaData(),
-                  schema=schema,
-                  autoload_with=engine_inventory)
+    table = recreate_inventory_table(name=INVENTORY_TABLE_NAME,
+                                     engine=engine_inventory,
+                                     schema=schema)
 
     with engine_inventory.begin() as conn:
         conn.execute(sa.insert(table), test_data.INVENTORY)
 
-    return df_inventory
+    return pd.DataFrame(test_data.INVENTORY)
 
 
 @pytest.fixture
-def configuration(schema, engine_inventory, engine_meta, conn_inventory,
+def configuration(schema,
+                  engine_inventory,
+                  engine_meta,
+                  conn_inventory,
                   conn_meta):
     configure(
         settings=dict(
@@ -167,7 +150,7 @@ def configuration(schema, engine_inventory, engine_meta, conn_inventory,
             META_CONN=conn_meta,
             META_CONN_SCHEMA=schema,
             META_TABLE_NAME=META_TABLE_NAME,
-            META_COLS={"uid": "id", "file": "file", "weight": "size"},
+            META_COLS={"uid": "id", "item": "item", "weight": "weight"},
         ),
         initialize_db=False
     )

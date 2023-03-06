@@ -11,7 +11,7 @@ class MetaTableColumns(BaseModel):
     """
 
     uid: str = "uid"
-    file: str = "file"
+    item: str = "item"
     weight: Optional[str] = None
 
 

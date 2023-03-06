@@ -1,9 +1,10 @@
 from pybatchintory.sql.crud import read_meta_id_range_from_meta
-
+from ..conftest import META_TABLE_NAME_SCHEMA as META_TABLE
 
 def test_get_meta_id_range_from_meta_bounded_backfill_no_constraints(
         default_setup):
     id_range = read_meta_id_range_from_meta(
+        meta_table=META_TABLE,
         id_min=2,
         id_max=4
     )
@@ -17,6 +18,7 @@ def test_get_meta_id_range_from_meta_bounded_backfill_no_constraints(
 def test_get_meta_id_range_from_meta_unbounded_backfill_no_constraints(
         default_setup):
     id_range = read_meta_id_range_from_meta(
+        meta_table=META_TABLE,
         id_min=0,
         id_max=4
     )
@@ -30,6 +32,7 @@ def test_get_meta_id_range_from_meta_unbounded_backfill_no_constraints(
 def test_get_meta_id_range_from_meta_bounded_incremental_no_constraints(
         default_setup):
     id_range = read_meta_id_range_from_meta(
+        meta_table=META_TABLE,
         id_min=8,
     )
 
@@ -42,6 +45,7 @@ def test_get_meta_id_range_from_meta_bounded_incremental_no_constraints(
 def test_get_meta_id_range_from_meta_unbounded_incremental_no_constraints(
         default_setup):
     id_range = read_meta_id_range_from_meta(
+        meta_table=META_TABLE,
         id_min=0,
     )
 
@@ -54,6 +58,7 @@ def test_get_meta_id_range_from_meta_unbounded_incremental_no_constraints(
 def test_get_meta_id_range_from_meta_weight_constraint_without_remainder(
         default_setup):
     id_range = read_meta_id_range_from_meta(
+        meta_table=META_TABLE,
         id_min=0,
         weight=12
     )
@@ -67,6 +72,7 @@ def test_get_meta_id_range_from_meta_weight_constraint_without_remainder(
 def test_get_meta_id_range_from_meta_weight_constraint_with_remainder(
         default_setup):
     id_range = read_meta_id_range_from_meta(
+        meta_table=META_TABLE,
         id_min=0,
         weight=7
     )
@@ -79,6 +85,7 @@ def test_get_meta_id_range_from_meta_weight_constraint_with_remainder(
 
 def test_get_meta_id_range_from_meta_count_constraint(default_setup):
     id_range = read_meta_id_range_from_meta(
+        meta_table=META_TABLE,
         id_min=0,
         count=2
     )
@@ -92,6 +99,7 @@ def test_get_meta_id_range_from_meta_count_constraint(default_setup):
 def test_get_meta_id_range_from_meta_count_overrules_weight_constraint(
         default_setup):
     id_range = read_meta_id_range_from_meta(
+        meta_table=META_TABLE,
         id_min=0,
         count=2,
         weight=20
@@ -106,6 +114,7 @@ def test_get_meta_id_range_from_meta_count_overrules_weight_constraint(
 def test_get_meta_id_range_from_meta_weight_overrules_count_constraint(
         default_setup):
     id_range = read_meta_id_range_from_meta(
+        meta_table=META_TABLE,
         id_min=0,
         count=10,
         weight=30
@@ -120,6 +129,7 @@ def test_get_meta_id_range_from_meta_weight_overrules_count_constraint(
 def test_get_meta_id_range_from_meta_weight_constraint_not_realizable(
         default_setup):
     id_range = read_meta_id_range_from_meta(
+        meta_table=META_TABLE,
         id_min=5,
         weight=5
     )
