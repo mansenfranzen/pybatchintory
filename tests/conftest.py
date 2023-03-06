@@ -1,12 +1,14 @@
 from typing import Dict
 
 import pandas as pd
-import pytest as pytest
-from sqlalchemy import create_engine, MetaData, text
+import pytest
+from sqlalchemy import create_engine, MetaData, text, schema, Table
 import sqlalchemy as sa
 
 from pybatchintory import configure, sql
 from pybatchintory.sql.models import generate_inventory_table
+
+from . import test_data
 
 META_TABLE_NAME = "test_meta"
 META_CONN_SCHEMA = "test_pybatchintory"
@@ -27,50 +29,33 @@ def pytest_addoption(parser):
 
 @pytest.fixture(scope="function")
 def conn_inventory(pytestconfig, tmp_path):
-    if pytestconfig.getoption("db") == "sqlite":
+    db_param = pytestconfig.getoption("db")
+    if db_param == "sqlite":
         filename = tmp_path.joinpath("test_backend.db")
         return f"sqlite:///{filename}"
+    elif db_param == "postgresql":
+        return "postgresql+psycopg2://postgres:postgres@localhost:5432/postgres"
     else:
         raise NotImplementedError
 
 
 @pytest.fixture(scope="function")
 def conn_meta(pytestconfig, tmp_path):
-    if pytestconfig.getoption("db") == "sqlite":
+    db_param = pytestconfig.getoption("db")
+    if db_param == "sqlite":
         filename = tmp_path.joinpath("test_meta.db")
         return f"sqlite:///{filename}"
+    elif db_param == "postgresql":
+        return "postgresql+psycopg2://docker:docker@localhost:5432/docker"
     else:
         raise NotImplementedError
 
 
-@pytest.fixture(scope="function")
-def engine_inventory(conn_inventory):
-    engine = create_engine(conn_inventory)
+def recreate_inventory_table(engine_inventory):
+    """Removes existing table and creates new inventory table.
 
-    # support schemas in sqlite
-    if engine.dialect.name == "sqlite":
-        with engine.connect() as conn:
-            stmt = text(f"ATTACH ':memory:' AS {INVENTORY_CONN_SCHEMA};")
-            conn.execute(stmt)
+    """
 
-    return engine
-
-
-@pytest.fixture(scope="function")
-def engine_meta(conn_meta):
-    engine = create_engine(conn_meta)
-
-    # support schemas in sqlite
-    if engine.dialect.name == "sqlite":
-        with engine.begin() as conn:
-            stmt = text(f"ATTACH ':memory:' AS {META_CONN_SCHEMA};")
-            conn.execute(stmt)
-
-    return engine
-
-
-@pytest.fixture(scope="function")
-def create_inventory_tables_schema(engine_inventory):
     metadata = MetaData()
 
     generate_inventory_table(
@@ -79,9 +64,52 @@ def create_inventory_tables_schema(engine_inventory):
         schema=INVENTORY_CONN_SCHEMA
     )
 
+    metadata.drop_all(bind=engine_inventory)
     metadata.create_all(bind=engine_inventory, checkfirst=True)
 
-    return engine_inventory
+
+@pytest.fixture(scope="function")
+def engine_inventory(conn_inventory):
+    """Create engine and create schema/tables if not exist.
+
+    """
+
+    engine = create_engine(conn_inventory)
+
+    # support schemas in sqlite
+    if engine.dialect.name == "sqlite":
+        with engine.connect() as conn:
+            stmt = text(f"ATTACH ':memory:' AS {INVENTORY_CONN_SCHEMA};")
+            conn.execute(stmt)
+
+    else:
+        with engine.begin() as conn:
+            if not conn.dialect.has_schema(conn, INVENTORY_CONN_SCHEMA):
+                conn.execute(schema.CreateSchema(INVENTORY_CONN_SCHEMA))
+
+    recreate_inventory_table(engine)
+
+    return engine
+
+
+@pytest.fixture(scope="function")
+def engine_meta(conn_meta):
+    """Create engine and create schema if not exist.
+
+    """
+
+    engine = create_engine(conn_meta)
+
+    if engine.dialect.name == "sqlite":
+        with engine.begin() as conn:
+            stmt = text(f"ATTACH ':memory:' AS {META_CONN_SCHEMA};")
+            conn.execute(stmt)
+    else:
+        with engine.begin() as conn:
+            if not conn.dialect.has_schema(conn, META_CONN_SCHEMA):
+                conn.execute(schema.CreateSchema(META_CONN_SCHEMA))
+
+    return engine
 
 
 @pytest.fixture
@@ -101,32 +129,14 @@ def df_meta(engine_meta):
 
 
 @pytest.fixture
-def df_inventory(create_inventory_tables_schema):
-    df_inventory = pd.DataFrame({
-        "id": [1, 2],
-        "meta_table": ["test_meta", "test_meta"],
-        "job": ["j1", "j2"],
-        "job_identifier": ["j1_1", "j2_1"],
-        "job_result": ["{file: 1}", "{file: 2}"],
-        "processing_start": [pd.Timestamp("2023-01-01 10:00:00"),
-                             pd.Timestamp("2023-01-01 12:00:00")],
-        "processing_end": [pd.Timestamp("2023-01-01 11:00:00"),
-                           pd.Timestamp("2023-01-01 13:00:00")],
-        "meta_id_start": [0, 5],
-        "meta_id_end": [4, 8],
-        "weight": [8, 23],
-        "count": [5, 4],
-        "attempt": [1, 1],
-        "status": ["succeeded", "running"],
-        "config": ['{"foo": "bar"}', '{"bar": "foo"}'],
-        "logging": ["log1", "log2"]
-    })
+def df_inventory(engine_inventory):
+    table = Table(INVENTORY_TABLE_NAME,
+                  MetaData(),
+                  schema=INVENTORY_CONN_SCHEMA,
+                  autoload_with=engine_inventory)
 
-    df_inventory.to_sql(INVENTORY_TABLE_NAME,
-                        schema=INVENTORY_CONN_SCHEMA,
-                        con=create_inventory_tables_schema,
-                        if_exists="append",
-                        index=False)
+    with engine_inventory.begin() as conn:
+        conn.execute(sa.insert(table), test_data.INVENTORY)
 
     return df_inventory
 
