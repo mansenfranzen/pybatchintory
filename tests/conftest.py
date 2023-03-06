@@ -3,7 +3,7 @@ from typing import Dict
 import pandas as pd
 import pytest
 from packaging import version
-from sqlalchemy import create_engine, MetaData, text, schema, Table
+from sqlalchemy import create_engine, MetaData, text, Table
 import sqlalchemy as sa
 
 from pybatchintory import configure, sql
@@ -17,6 +17,7 @@ INVENTORY_LOGS_TABLE_NAME = "test_inventory_logs"
 
 POSTGRESQL_URL = "postgresql+psycopg2://postgres:postgres@localhost:5432/postgres"
 
+
 def pytest_addoption(parser):
     parser.addoption(
         "--db",
@@ -25,6 +26,7 @@ def pytest_addoption(parser):
         help="Choose database backend to test against",
         choices=("sqlite", "postgresql"),
     )
+
 
 @pytest.fixture
 def schema(pytestconfig):
@@ -35,6 +37,7 @@ def schema(pytestconfig):
         return None
     else:
         return "test_pybatchintory"
+
 
 @pytest.fixture(scope="function")
 def conn_inventory(pytestconfig, tmp_path):
@@ -94,7 +97,7 @@ def engine_inventory(schema, conn_inventory):
     else:
         with engine.begin() as conn:
             if not conn.dialect.has_schema(conn, schema):
-                conn.execute(schema.CreateSchema(schema))
+                conn.execute(sa.schema.CreateSchema(schema))
 
     recreate_inventory_table(engine, schema)
 
@@ -116,7 +119,7 @@ def engine_meta(schema, conn_meta):
     else:
         with engine.begin() as conn:
             if not conn.dialect.has_schema(conn, schema):
-                conn.execute(schema.CreateSchema(schema))
+                conn.execute(sa.schema.CreateSchema(schema))
 
     return engine
 
@@ -129,11 +132,15 @@ def df_meta(schema, engine_meta):
         "size": range(0, 20, 2)
     })
 
-    df_meta.to_sql(META_TABLE_NAME,
-                   con=engine_meta,
-                   if_exists="replace",
-                   schema=schema,
-                   index=False)
+    kwargs = dict(con=engine_meta,
+                  if_exists="replace",
+                  schema=schema,
+                  index=False)
+
+    if schema:
+        kwargs["schema"] = schema
+
+    df_meta.to_sql(META_TABLE_NAME, **kwargs)
     return df_meta
 
 
@@ -151,7 +158,8 @@ def df_inventory(schema, engine_inventory):
 
 
 @pytest.fixture
-def configuration(schema, engine_inventory, engine_meta, conn_inventory, conn_meta):
+def configuration(schema, engine_inventory, engine_meta, conn_inventory,
+                  conn_meta):
     configure(
         settings=dict(
             INVENTORY_CONN=conn_inventory,
