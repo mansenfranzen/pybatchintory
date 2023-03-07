@@ -5,16 +5,6 @@ from pydantic.main import BaseModel
 from pydantic.types import SecretStr
 
 
-class MetaTableColumns(BaseModel):
-    """Stores the relevant column names of the meta data table.
-
-    """
-
-    uid: str = "uid"
-    item: str = "item"
-    weight: Optional[str] = None
-
-
 class Settings(BaseSettings):
     """Defines all package wide configurations.
 
@@ -37,9 +27,6 @@ class Settings(BaseSettings):
     """Represents SqlAlchemy connection string for the meta tables which
     are external to `pybatchintory` with read only access. If not given, is 
     assumes it has the same connection string as `CONN_BACKEND`."""
-
-    META_COLS: MetaTableColumns = MetaTableColumns()
-    """Define the column name mappings for the meta data table."""
 
     DEBUG: bool = False
     """Enable debug mode to see more information such as generated SQL strings.

@@ -1,18 +1,23 @@
-from typing import Optional
+from typing import Optional, Dict
 
 from pybatchintory.batch import Batch
-from pybatchintory.models import BatchConfig
+from pybatchintory.models import BatchConfig, MetaTableSpec
 from pybatchintory.sql import crud
 from pybatchintory import validate
 
 
-def acquire_batch(meta_table: str,
-                  job: str,
+def acquire_batch(job: str,
+                  meta_table_name: str,
+                  meta_table_cols: Optional[Dict[str, str]] = None,
                   job_identifier: Optional[str] = None,
                   batch_id_min: int = 0,
                   batch_id_max: Optional[int] = None,
                   batch_weight: Optional[float] = None,
                   batch_count: Optional[int] = None) -> Optional[Batch]:
+
+    meta_table_cols = meta_table_cols or {}
+    meta_table = MetaTableSpec(name=meta_table_name, cols=meta_table_cols)
+
     id_inventory_max = crud.read_max_meta_id_from_inventory(
         meta_table=meta_table,
         job=job

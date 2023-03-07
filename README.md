@@ -82,9 +82,17 @@ configure(dot_env="PATH_TO_DOT_ENV_FILE",
 ```python
 from pybatchintory import acquire_batch
 
-batch = acquire_batch(meta_table="meta_table", 
-					  job="incremental_job", 
-					  batch_weight=100)
+batch = acquire_batch(
+    meta_table_name="meta_table", 
+    meta_table_cols={
+        "uid": "id",
+        "item": "file",
+        "weight": "size_in_mib"
+	},
+    job="incremental_job",
+    batch_weight=100
+)
+
 process_func(batch.items)
 batch.success()
 ```
@@ -94,11 +102,19 @@ batch.success()
 ```python
 from pybatchintory import acquire_batch
 
-batch = acquire_batch(meta_table="meta_table", 
-					  job="backfill_job", 
-					  batch_id_min=20,
-					  batch_id_max=80,
-					  batch_weight=100)
+batch = acquire_batch(
+    meta_table_name="meta_table", 
+    meta_table_cols={
+        "uid": "id",
+        "item": "file",
+        "weight": "size_in_mib"
+	},
+    job="backfill_job", 
+    batch_id_min=20,
+    batch_id_max=80,
+    batch_weight=100
+)
+
 process_func(batch.items)
 batch.success()
 ```
@@ -110,10 +126,12 @@ batch.success()
 ```python
 from pybatchintory import acquire_batches
 
-batches = acquire_batches(meta_table="meta_table",
-						  job="incremental_job",
-						  batch_weight=10,
-						  iterations=5)
+batches = acquire_batches(
+   meta_table_name="meta_table",
+   job="incremental_job",
+   batch_weight=10,
+   iterations=5
+)
 
 for batch in batches:
 	process_func(batch.items)
@@ -127,16 +145,22 @@ for batch in batches:
 from pybatchintory import acquire_batch
 
 # version 1 - manual error handling
-batch = acquire_batch(job="incremental_job", weight=10)
+batch = acquire_batch(
+    meta_table_name="meta_table",
+    job="incremental_job", 
+    batch_weight=10)
 try:
-   process_func(batch.items)
-   batch.success()
+    process_func(batch.items)
+    batch.success()
 except Exception as e:
-   batch.error(e)
-   raise
+    batch.error(e)
+    raise
 	
 # version 2 - automatic error handling - not yet implemented
-batch = acquire_batch(job="incremental_job", weight=10)
+batch = acquire_batch(
+    meta_table_name="meta_table",
+    job="incremental_job", 
+    batch_weight=10)
 batch.process(func, args, kwargs)
 ```
 

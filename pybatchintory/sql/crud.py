@@ -6,13 +6,12 @@ from sqlalchemy.sql.selectable import CTE
 
 from pybatchintory import sql
 from pybatchintory.sql import helper
-from pybatchintory import config as cfg
 from pybatchintory.logging import logger
-from pybatchintory.models import BatchIdRange
+from pybatchintory.models import BatchIdRange, MetaTableSpec
 from pybatchintory.sql.reflection import autoload_meta_table
 
 
-def read_max_meta_id_from_inventory(meta_table: str,
+def read_max_meta_id_from_inventory(meta_table: MetaTableSpec,
                                     job: str,
                                     conn: Optional[Connection] = None) -> int:
     """Given a job, retrieve the highest item id that has been previously
@@ -27,7 +26,7 @@ def read_max_meta_id_from_inventory(meta_table: str,
     value_or_zero = sa.func.coalesce(max_val, 0)
 
     # where
-    where = sa.and_(inventory.c.meta_table == meta_table,
+    where = sa.and_(inventory.c.meta_table == meta_table.name,
                     inventory.c.job == job)
 
     # query
@@ -44,13 +43,13 @@ def read_max_meta_id_from_inventory(meta_table: str,
     return max_meta_id
 
 
-def read_max_meta_id_from_meta(meta_table: str) -> int:
+def read_max_meta_id_from_meta(meta_table: MetaTableSpec) -> int:
     """Retrieve the highest item id from meta table.
 
     """
 
-    t_meta = autoload_meta_table(meta_table)
-    c_id = t_meta.c[cfg.settings.META_COLS.uid]
+    t_meta = autoload_meta_table(meta_table.name)
+    c_id = t_meta.c[meta_table.cols.uid]
 
     # select
     max_val = sa.func.max(c_id)
@@ -66,7 +65,7 @@ def read_max_meta_id_from_meta(meta_table: str) -> int:
     return max_meta_id
 
 
-def _build_meta_id_base_cte(meta_table: str,
+def _build_meta_id_base_cte(meta_table: MetaTableSpec,
                             id_min: int,
                             id_max: Optional[int] = None) -> CTE:
     """Build CTE for meta ia base information regarding rank and cumulative
@@ -74,9 +73,9 @@ def _build_meta_id_base_cte(meta_table: str,
 
     """
     # get table/column objects for meta table
-    t_meta = autoload_meta_table(meta_table)
-    c_id = t_meta.c[cfg.settings.META_COLS.uid]
-    weight_col = cfg.settings.META_COLS.weight
+    t_meta = autoload_meta_table(meta_table.name)
+    c_id = t_meta.c[meta_table.cols.uid]
+    weight_col = meta_table.cols.weight
 
     # select
     select = [c_id.label("id"),
@@ -98,7 +97,7 @@ def _build_meta_id_base_cte(meta_table: str,
 
 
 def read_meta_id_range_from_meta(
-        meta_table: str,
+        meta_table: MetaTableSpec,
         id_min: int,
         id_max: Optional[int] = None,
         weight: Optional[float] = None,
@@ -115,7 +114,7 @@ def read_meta_id_range_from_meta(
 
     # cte where
     cte_where = []
-    if weight and cfg.settings.META_COLS.weight:
+    if weight and meta_table.cols.weight:
         cte_where.append(cte.c.weight <= weight)
     if count:
         cte_where.append(cte.c.count <= count)
@@ -141,16 +140,16 @@ def read_meta_id_range_from_meta(
         return _read_single_next_id_from_meta(meta_table, id_min)
 
 
-def _read_single_next_id_from_meta(meta_table: str,
+def _read_single_next_id_from_meta(meta_table: MetaTableSpec,
                                    id_min: int) -> BatchIdRange:
     """Fallback if weight constraint does not even allow a single data item
     to be returned.
 
     """
 
-    t_meta = autoload_meta_table(meta_table)
-    c_id = t_meta.c[cfg.settings.META_COLS.uid]
-    weight_col = cfg.settings.META_COLS.weight
+    t_meta = autoload_meta_table(meta_table.name)
+    c_id = t_meta.c[meta_table.cols.uid]
+    weight_col = meta_table.cols.weight
 
     filter_subquery = sa.select(sa.func.min(c_id)).where(c_id >= id_min)
 
@@ -185,23 +184,23 @@ def update_row_in_inventory(primary_key: int, values: Dict):
     """
 
     t_inventory = sql.db.table_inventory
-    c_id = t_inventory.c[cfg.settings.META_COLS.uid]
+    c_id = t_inventory.c.id
 
     stmt = sa.update(t_inventory).where(c_id == primary_key).values(values)
     with sql.db.engine_inventory.begin() as conn:
         conn.execute(stmt)
 
 
-def read_items_via_id_range_from_meta(meta_table: str,
+def read_items_via_id_range_from_meta(meta_table: MetaTableSpec,
                                       id_min: int,
                                       id_max: int) -> List[str]:
     """Loads items from meta table for given id range.
 
     """
 
-    t_meta = autoload_meta_table(meta_table)
-    c_id = t_meta.c[cfg.settings.META_COLS.uid]
-    c_item = t_meta.c[cfg.settings.META_COLS.item]
+    t_meta = autoload_meta_table(meta_table.name)
+    c_id = t_meta.c[meta_table.cols.uid]
+    c_item = t_meta.c[meta_table.cols.item]
 
     where = sa.and_(c_id >= id_min, c_id <= id_max)
     stmt = sa.select(c_item).where(where)

@@ -18,12 +18,31 @@ class BatchIdRange(BaseModel):
         orm_mode = True
 
 
+class MetaTableColumns(BaseModel):
+    """Stores the relevant column names of the meta data table.
+
+    """
+
+    uid: str = "uid"
+    item: str = "item"
+    weight: Optional[str] = "weight"
+
+
+class MetaTableSpec(BaseModel):
+    """Represents the configuration for the meta data table.
+
+    """
+
+    name: str
+    cols: MetaTableColumns = MetaTableColumns()
+
+
 class BatchConfig(BaseModel):
     """Resembles config with which a batch is acquired.
 
     """
 
-    meta_table: str
+    meta_table: MetaTableSpec
     job: str
     job_identifier: Optional[str]
     batch_id_min: int = 0

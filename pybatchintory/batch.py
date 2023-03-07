@@ -39,7 +39,7 @@ class Batch:
     def _build_acquire_values(self) -> Dict:
         return {"job": self.batch_cfg.job,
                 "job_identifier": self.batch_cfg.job_identifier,
-                "meta_table": self.batch_cfg.meta_table,
+                "meta_table": self.batch_cfg.meta_table.name,
                 "batch_id_start": self.id_range.id_min,
                 "batch_id_end": self.id_range.id_max,
                 "batch_count": self.id_range.count,

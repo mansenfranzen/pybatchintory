@@ -158,7 +158,6 @@ def configuration(schema,
             INVENTORY_CONN_SCHEMA=schema,
             INVENTORY_TABLE_NAME=INVENTORY_TABLE_NAME,
             META_CONN=conn_meta,
-            META_COLS={"uid": "id", "item": "item", "weight": "weight"},
         )
     )
 

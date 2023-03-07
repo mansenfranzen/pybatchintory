@@ -35,13 +35,13 @@ def inventory_data(table_name):
               'config': {"bar": "foo"},
               'logging': 'log2'}]
 
-META = [{'id': 0, 'item': 'f0', 'weight': 0},
-        {'id': 1, 'item': 'f1', 'weight': 2},
-        {'id': 2, 'item': 'f2', 'weight': 4},
-        {'id': 3, 'item': 'f3', 'weight': 6},
-        {'id': 4, 'item': 'f4', 'weight': 8},
-        {'id': 5, 'item': 'f5', 'weight': 10},
-        {'id': 6, 'item': 'f6', 'weight': 12},
-        {'id': 7, 'item': 'f7', 'weight': 14},
-        {'id': 8, 'item': 'f8', 'weight': 16},
-        {'id': 9, 'item': 'f9', 'weight': 18}]
+META = [{'uid': 0, 'item': 'f0', 'weight': 0},
+        {'uid': 1, 'item': 'f1', 'weight': 2},
+        {'uid': 2, 'item': 'f2', 'weight': 4},
+        {'uid': 3, 'item': 'f3', 'weight': 6},
+        {'uid': 4, 'item': 'f4', 'weight': 8},
+        {'uid': 5, 'item': 'f5', 'weight': 10},
+        {'uid': 6, 'item': 'f6', 'weight': 12},
+        {'uid': 7, 'item': 'f7', 'weight': 14},
+        {'uid': 8, 'item': 'f8', 'weight': 16},
+        {'uid': 9, 'item': 'f9', 'weight': 18}]

@@ -4,6 +4,8 @@ from pybatchintory import config as cfg
 from sqlalchemy import Table, Column, Integer, String, DateTime, Enum, \
     JSON, MetaData, func, BigInteger, Float
 
+from pybatchintory.models import MetaTableColumns
+
 TS = func.current_timestamp()
 
 
@@ -41,12 +43,15 @@ def generate_inventory_table(name: str,
 def generate_meta_table(name: str,
                         metadata: MetaData,
                         schema: Optional[str] = None) -> Table:
+
+    default_cols = MetaTableColumns()
+
     return Table(name,
                  metadata,
-                 Column('id',
+                 Column(default_cols.uid,
                         BigInteger().with_variant(Integer, "sqlite"),
                         primary_key=True),
-                 Column('item', String, nullable=False),
-                 Column('weight', Float),
+                 Column(default_cols.item, String, nullable=False),
+                 Column(default_cols.weight, Float),
                  schema=schema,
                  sqlite_autoincrement=True)
