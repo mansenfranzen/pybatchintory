@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pybatchintory"
-version = "0.0.3"
+version = "0.0.6"
 description = "Middleware for generating batches of data items enabling incremental processing and backfill scenarios with predictable workloads."
 authors = ["Franz Wöllert <franz.woellert@gmail.com>"]
 license = "MIT"
