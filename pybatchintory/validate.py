@@ -1,4 +1,6 @@
 """This module contains validation functions."""
+from typing import Union
+
 from pybatchintory.logging import logger
 
 
@@ -34,3 +36,18 @@ def max_inventory_id_greater_equals_max_meta_id(
         return True
 
     return False
+
+
+def acquire_batch_is_invalid(id_user_min: Union[float, int],
+                             id_meta_max: int,
+                             id_inventory_max: int) -> bool:
+    checks = [
+        id_min_greater_equals_max_meta_id(
+            id_user_min=id_user_min,
+            id_meta_max=id_meta_max),
+        max_inventory_id_greater_equals_max_meta_id(
+            id_inventory_max=id_inventory_max,
+            id_meta_max=id_meta_max)
+    ]
+
+    return any(checks)
