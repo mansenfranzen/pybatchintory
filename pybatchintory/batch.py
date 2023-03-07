@@ -77,13 +77,16 @@ class Batch:
 
         crud.update_row_in_inventory(primary_key=self.pk, values=values)
 
-    def success(self, **kwargs):
+    def succeeded(self, **kwargs):
         self.release(success=True, **kwargs)
 
-    def error(self, error: Exception, **kwargs):
-        if "logging" in kwargs:
-            kwargs["logging"] += str(error)
-        else:
-            kwargs["logging"] = str(error)
+    def failed(self, error: Optional[Exception] = None, **kwargs):
+
+        if error:
+            if "logging" in kwargs:
+                kwargs["logging"] += str(error)
+            else:
+                kwargs["logging"] = str(error)
+
         self.release(success=False, **kwargs)
 

@@ -71,8 +71,9 @@ In addition, you may set a dot-env file and explicit settings programmatically:
 ```python
 from pybatchintory import configure
 
-configure(dot_env="PATH_TO_DOT_ENV_FILE", 
-		  settings=dict(INVENTORY_CONN="CONN_STRING"))
+configure(
+    dot_env="PATH_TO_DOT_ENV_FILE", 
+    settings=dict(INVENTORY_CONN="CONN_STRING"))
 ```
 
 ### Invocation
@@ -94,7 +95,7 @@ batch = acquire_batch(
 )
 
 process_func(batch.items)
-batch.success()
+batch.succeeded()
 ```
 
 #### Backfill with predictable workload
@@ -116,7 +117,7 @@ batch = acquire_batch(
 )
 
 process_func(batch.items)
-batch.success()
+batch.succeeded()
 ```
 
 #### Multiple batches
@@ -127,15 +128,15 @@ batch.success()
 from pybatchintory import acquire_batches
 
 batches = acquire_batches(
-   meta_table_name="meta_table",
-   job="incremental_job",
-   batch_weight=10,
-   iterations=5
+	meta_table_name="meta_table",
+	job="incremental_job",
+	batch_weight=10,
+	iterations=5
 )
 
 for batch in batches:
 	process_func(batch.items)
-	batch.success()
+	batch.succeeded()
 ```
 
 #### Error handling
@@ -146,21 +147,21 @@ from pybatchintory import acquire_batch
 
 # version 1 - manual error handling
 batch = acquire_batch(
-    meta_table_name="meta_table",
-    job="incremental_job", 
-    batch_weight=10)
+	meta_table_name="meta_table",
+	job="incremental_job",
+	batch_weight=10)
 try:
-    process_func(batch.items)
-    batch.success()
+	process_func(batch.items)
+	batch.succeeded()
 except Exception as e:
-    batch.error(e)
-    raise
-	
+	batch.failed(e)
+	raise
+
 # version 2 - automatic error handling - not yet implemented
 batch = acquire_batch(
-    meta_table_name="meta_table",
-    job="incremental_job", 
-    batch_weight=10)
+	meta_table_name="meta_table",
+	job="incremental_job",
+	batch_weight=10)
 batch.process(func, args, kwargs)
 ```
 
