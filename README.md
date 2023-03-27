@@ -6,7 +6,7 @@ Meta information about data items is leveraged to generate **batches** of work. 
 
 ## Rational
 
-`pybatchintory` may greatly improve batch data pipelines by enabling the following four features:
+`pybatchintory` may greatly improve batch processing data pipelines by enabling the following four features:
 
 - **Incremental processing**: Process only new, unseen data avoiding recomputation of all data items.
 - **Backfill scenarios**: Reprocess historical data in a configurable and automated fashion without manual intervention.
