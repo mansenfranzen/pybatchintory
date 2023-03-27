@@ -1,17 +1,25 @@
 # pybatchintory
 
-`pybatchintory` represents a middleware for batch oriented data pipelines. It enables incremental processing and provides first class support for reprocessing historical data with predictable workloads.
+`pybatchintory` is a middleware for batch processing data pipelines. It enables incremental processing and provides first class support for reprocessing historical data with predictable workloads.
 
-Only meta information of data items is consumed and processed. The actual data is not read. An **inventory** of already processed and unseen data items is managed while providing an API to interact with it.
+Meta information about data items is leveraged to generate **batches** of work. The actual data is not read. At its core, an **inventory** maintains state of already processed and unseen data items.
+
+## Rational
+
+`pybatchintory` may greatly improve batch data pipelines by enabling the following four features:
+
+- **Incremental processing**: Process only new, unseen data avoiding recomputation of all data items.
+- **Backfill scenarios**: Reprocess historical data in a configurable and automated fashion without manual intervention.
+- **Predictable workloads**: Define the amount of data to be processed upfront to match compute resources accordingly for best efficiency.
+- **Transparency and observability**: Enrich processed data with meta information such as processing job, time and result.
 
 ## Reasoning
 
-This package may greatly improve data pipelines by enabling the following four features:
+While incremental processing is supported by design in stream processing frameworks, this functionality is rarely available in batch processing frameworks. Only very few off-the-shelf solutions (e.g., AWS Glue Job Bookmarks) provide easy-to-use abstractions to handle incremental batch semantics. More often than not, custom non-standard solutions are used in production environments. Interestingly, these rely on timestamp watermarks which closely resemble what stream processing frameworks offer out-of-the-box. 
 
-- **Incremental processing**: Only new, unseen data items can be processed, avoiding recomputation of all data items.
-- **Backfill scenarios**: Historical data items can be reprocessed in a configurable and automated way.
-- **Predictable workloads**: The amount of data to be processed can be defined and is known upfront to adjust compute resources accordingly for best efficiency and cost/performance ratio for both incremental processing and backfill scenarios.
-- **Transparency and observability**: Each data item can be enriched with information about when it was processed by what job.
+What is more, support for backfilling is even worse. Reprocessing of data is not an uncommon theme. Bugs need to be fixed in production pipelines and new features have to be computed for historical data, too. In reality, large volumes of data accumulate over time which may become impossible to be processed all at once. Hence, manual planning and execution is required to create processable chunks of work. 
+
+`pybatchintory` solves these issues while providing a thin abstraction layer that can be integrated with any batch processing framework. 
 
 ## Preconditions
 
