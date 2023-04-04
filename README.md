@@ -2,7 +2,7 @@
 
 `pybatchintory` is a middleware for batch processing data pipelines. It enables incremental processing and provides first class support for reprocessing historical data with predictable workloads.
 
-**Meta information** about **data assests** is leveraged to generate **batches** of work. The actual data is not read. An **inventory** maintains state of already processed data items.
+**Metadata** about **data assests** is leveraged to generate **batches** of work. The actual data is not read. An **inventory** maintains state of already processed data items.
 
 
 ## Rational
@@ -11,32 +11,33 @@
 
 - **Incremental processing**: Process only new, unseen data avoiding recomputation of all data items.
 - **Backfilling**: Reprocess historical data in a configurable and automated fashion without manual intervention.
-- **Predictable workloads**: Define the amount of data to be processed upfront to match compute resources accordingly for best efficiency.
+- **Predictable workloads**: Define the amount of data to be processed to match compute resources for best efficiency.
 - **Transparency and observability**: Enrich processed data with meta information such as processing job, time and result.
 
 ## Reasoning
 
 While incremental processing is supported in stream processing frameworks by design, this functionality is rarely available in batch processing frameworks. Only very few off-the-shelf solutions provide easy-to-use abstractions to handle incremental batch semantics (e.g., AWS Glue Job Bookmarks). More often than not, custom non-standard solutions are used in production environments. Interestingly, these rely on timestamp watermarks which closely resemble what stream processing frameworks offer out-of-the-box. 
 
-What is more, support for backfilling is even worse. Reprocessing of data is not an uncommon theme. Bugs need to be fixed in production pipelines and new features have to be computed for historical data, too. In reality, large volumes of data accumulate over time which may become impossible to be processed all at once. Hence, manual planning and execution is required to create processable chunks of work. 
+Support for backfilling is even worse. Reprocessing of data is not an uncommon theme. Bugs need to be fixed in production pipelines and new features have to be computed for historical data, too. In reality, large volumes of data accumulate over time which may become impossible to be processed all at once. Hence, manual planning and execution is required to create processable chunks of work. 
 
 `pybatchintory` solves these issues while providing a thin abstraction layer that can be integrated with any batch processing framework. 
 
 ## Preconditions
 
-`pybatchintory` assumes the existence of a metadata table that contains information about the data items, such as their file location and registration timestamps. Importantly, to properly generate ranges of data items constituting a single batch to be processed, `pybatchintory` requires the metadata table to provide a **unique auto-increment ID column**.
+`pybatchintory` assumes the existence of a metadata table that contains information about the data assets, such as file location and size. To generate ranges of data assets constituting a batch to be processed, `pybatchintory` requires the metadata table to provide a **unique auto-increment identifier column**.
 
 ## Concepts & Terminology 
 
 ![architecture](docs/material/architecture.svg)
 
-- **Data assets:** Represent arbitrary processable units of work. Typically, these are parquet or json files stored in an object store such as AWS S3 or Azure Blob. However, since `pybatchintory` makes no strong assumptions about them, it can be anything consumable by a processing application.
-- **Meta table:** Contains meta information about data assets like file location and size. `pybatchintory` leverages it to generate batches of data assets. These are passed to the actual processing application.
-- **Batch generation:** Resembles the process of generating new batches of data assets. This is initiated by a processing application. Its result is determined by both the batch configuration (given by the processing application) and the historical state (given by the inventory table). It embodies the core logic enabling incremental and backfilling semantics with predictable workloads. 
-- **Batch configuration:** Specifies the characteristics of a batch of data assets. It contains the reference to the meta table while optionally defining a window of lower and upper boundaries with maximum workload size. The batch configuration is passed to `pybatchintory` by the processing application demanding a new batch of data assets.
-- **Batch:** Represents the result of the batch generation process. It contains references to one or more data assets. It is initiated by the batch generation process and is passed as a result to the processing application.
-- **Inventory table:** Represents the backend table of `pybatchintory`. It maintains state of historically processed data items. Each row corresponds to a single processing job consuming a batch of data assets.
-- **Processing application**: Resembles the application invoking `pybatchintory` to generate a new batch of data assets. It reads and processes the actual content of the data assets.
+- **Processing application**: Resembles the application that actually reads and processes the content of data assets. It utilizes `pybatchintory` to generate batches of data assets while passing a batch configuration.
+- **Batch configuration:** Specifies the characteristics of a batch of data assets. It contains the definition of incremental or backfill semantics with predictable workloads.
+- **Jobs:** Represent one or more executions of the processing application. Each instantiation invokes `pybatchintory` to fetch batch of data assets.
+- **Batches:** Contain references to one or more data assets.
+- **Batch generation:** Resembles the process of generating new batches of data assets. Its result is determined by the batch configuration, the inventory table and the meta table. It embodies the core logic enabling incremental and backfilling semantics with predictable workloads. 
+- **Inventory table:** Represents the backend table of `pybatchintory`. It maintains state of historically processed data items. Each row corresponds to a single  job consuming a batch with references to the meta table and a range of processed data assets.
+- **Meta table:** Contains meta information about data assets like file location and size. `pybatchintory` leverages it to generate batches of data assets.
+- **Data assets:** Represent arbitrary processable units of work. Typically, these are Parquet or JSON files stored in an object store such as AWS S3 or Azure Blob. However, since `pybatchintory` makes no strong assumptions about them, it can be anything consumable by a processing application.
 
 ## Assumptions
 
