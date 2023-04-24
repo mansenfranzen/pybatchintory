@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Developer - pybatchintory</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Developer";
+        var mkdocs_page_input_path = "developer.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> pybatchintory
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Developer</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#general-description">General description</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#purpose">Purpose</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#rationale">Rationale</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#incremental-processing">Incremental processing</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#backfilling">Backfilling</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#predictable-workloads">Predictable Workloads</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#observability">Observability</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#terminiology">Terminiology</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#precondition">Precondition</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#limitation">Limitation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#user-stories">User Stories</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#specific-requirements">Specific requirements</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#terminiology_1">Terminiology</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#functional-requirements">Functional requirements</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#acquire-release">Acquire &amp; Release</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#batch-generation">Batch Generation</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#concurrent-processing">Concurrent processing</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#observability_1">Observability</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#non-functional-requirements">Non-functional requirements</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#usability">Usability</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#reliability">Reliability</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#performance">Performance</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#security">Security</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#maintainability">Maintainability</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#interfaces">Interfaces</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#programmatic-api">Programmatic API</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#command-line-client-cli">Command Line Client CLI</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">pybatchintory</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+      <li>Developer</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="requirements-specification">Requirements specification</h1>
+<p>This document outlines the requirements specification for a software project named "pybatchintory". It focuses on <em>what</em> the software is supposed to accomplish. The problem statement is formulated and the added value is justified. Functional and non functional requirements are derived. This is primarily intended for developers, architects and stakeholders.</p>
+<h2 id="general-description">General description</h2>
+<h3 id="purpose">Purpose</h3>
+<p><em>pybatchintory</em> represents a middleware for batch processing data pipelines. It may greatly improve performance, lower maintenance and enhance observability by enabling the following features:</p>
+<ul>
+<li>Incremental processing: Process only new, unseen data assets avoiding recomputation.</li>
+<li>Backfilling: Reprocess historical data assets in a configurable and automated fashion without manual intervention.</li>
+<li>Predictable workloads: Specify the amount of data assets to be processed to match compute resources for best efficiency.</li>
+<li>Transparency: Enrich processed data assets with job details like identifier, configuration and timestamp.</li>
+</ul>
+<p>From a high level perspective, a batch processing application (e.g., Apache Spark or Dask) delegates the generation of batches of data assets to <em>pybatchintory</em>. Conceptionally, <em>pybatchintory</em> only leverages the metadata about data assets and does not read their actual content.</p>
+<h3 id="rationale">Rationale</h3>
+<p>The following section summarizes the contextual background from which <em>pybatchintory</em> originates with its purpose and added value.  </p>
+<h4 id="incremental-processing">Incremental processing</h4>
+<p>While incremental processing is supported in stream processing frameworks by design, this functionality is rarely available in batch processing frameworks. Only very few off-the-shelf solutions provide easy-to-use abstractions to handle incremental batch semantics (e.g., AWS Glue Bookmarks). More often than not, custom non-standard solutions are used in production environments. Interestingly, these rely on timestamp watermarks or offsets which closely resemble what stream processing frameworks offer out-of-the-box.</p>
+<h4 id="backfilling">Backfilling</h4>
+<p>Reprocessing of data is not an uncommon theme. Bugs need to be fixed in production pipelines and new features have to be computed for historical data, too. However, first class support for such backfilling scenarios is currently not available. In production environments, large volumes of data accumulate over time which eventually become costly and error prone to be processed all at once. Hence, manual planning and execution is often required to create processable chunks of work.</p>
+<h4 id="predictable-workloads">Predictable Workloads</h4>
+<p>Data assets are not generated evenly over time. Rather, the data generation process often exhibits seasonality and spikes. If auto-scaling is not available, processing applications may drastically drop in performance (e.g., insufficient memory -&gt; disk spills) or may even fail completely (e.g., out of memory error). Even if auto-scaling is enabled, performance degradation is  likely because ideal parallelization is almost never possible in distributed systems. Currently, batch processing frameworks don't provide native support to limit the amount of data to be processed.</p>
+<h4 id="observability">Observability</h4>
+<p>Frequently, doubts arise regarding data integrity and reliabilty. Customers may question results presented in a dashboard such as missing data. Hence, underlying data pipelines need to be easily inspectable to verify that all available data assets have been processed correctly. Moreover, you may need to identify when a certain data asset was processed by a certain processing application. While the former scenario is widely supported, there exist little to no solutions for the latter one.</p>
+<h3 id="terminiology">Terminiology</h3>
+<h3 id="precondition">Precondition</h3>
+<p>In order to generate batches of data assets, the existence of a metadata table is mandatory. At minimum, it needs to contain a reference to the data item (e.g, file location) and a primary key as unique row identifier. Since <em>pybatchintory</em> generates chronologically sorted ranges of data items, the primary key needs to chronologically sorted, too.</p>
+<h3 id="limitation">Limitation</h3>
+<p>The batch generation process will only support consecutive data assets in chronologically increasing order. This greatly reduces complextiy and simplifies the implementation. Future versions may loosen this restriction.</p>
+<h3 id="user-stories">User Stories</h3>
+<ul>
+<li>As a developer, I want a dedicated solution to support incremental processing for batch pipelines.</li>
+<li>As a developer, I want a managed solution to reprocess historical data in configurable chunks.</li>
+<li>As a developer, I want to specify the amount of data that is consumed by a single processing application job.</li>
+<li>As a stakeholder/developer, I want predictable run times and best performance/cost-ratio.</li>
+<li>As a user/developer, I want to understand when a given data asset was processed by which job.</li>
+<li>As a user/developer, I want to retrieve the backlog size of unprocessed data assets for a given job.</li>
+</ul>
+<h2 id="specific-requirements">Specific requirements</h2>
+<h3 id="terminiology_1">Terminiology</h3>
+<p>This section extends the existing terminiology with more detailed concepts which are relevant for the specific requirements.</p>
+<ul>
+<li>Backlog: Describes the remaining amount of unprocessed data assets for a given job.</li>
+<li>Data asset type: Summarizes data assets that semantically belong together such as a directory of parquet files containing IoT data accross various devices and time ranges.</li>
+<li>Batch window: Specifies the range of data assets to be included in the batch generation process. Data assets outside this window are not relevant for the batch generation process. The window is defined by a lower and upper boundary which define the first and last data assets to be included, respectively.</li>
+<li>Batch status: Defines the possible states of a batch of data assets. This includes "processing", "succeeded" and "failed".</li>
+</ul>
+<h3 id="functional-requirements">Functional requirements</h3>
+<h4 id="acquire-release">Acquire &amp; Release</h4>
+<p>Before a job starts processing data assets, it has to acquire them. This marks these data assets as being reserved while preventing other jobs to simultaneously process them. Once the job has finished, it can release the of data assets with a given result status such as being succeeded or failed. </p>
+<h4 id="batch-generation">Batch Generation</h4>
+<p>This subsection represents the functionality that is required to generate a batch of data assets.</p>
+<h5 id="data-asset-selection">Data Asset Selection</h5>
+<p>Allow defining the metadata table that references the relevant data assets.</p>
+<h5 id="data-asset-filtering">Data Asset Filtering</h5>
+<p>Allow providing a filter condition to subset data assets from the metadata table. This is crucial in case the metadata table holds references to multiple data asset types.  The filtering method should be as flexible as possible to support a wide range of metadata table models.</p>
+<h5 id="incremental-processing_1">Incremental processing</h5>
+<p>Allow fetching non-processed data assets with no upper boundary for the batch window. Hence, newly added data assets will be included from one job run to another. The total amount of relevant data assets is dynamic and changes over time.</p>
+<h5 id="backfilling_1">Backfilling</h5>
+<p>Allow fetching non-processed data assets with an upper boundary for the batch window. Hence, newly added data assets will be excluded from one job run to another. The total amount of relevant data assets is fixed and remains constant over time.</p>
+<h5 id="chronology">Chronology</h5>
+<p>Always fetch data assets in chronological order starting with the oldest ones. </p>
+<h5 id="predictable-workloads_1">Predictable workloads</h5>
+<p>Allow to specify the maximum workload that a single job processes. This includes two possbile criteria. First, define the maximum number of data assets. Second, define the maximum weight as the total sum of data asset size. </p>
+<p>The weight criteria depends on the existance of a weight attribute being present in the metadata table. If not given, no weight can be computed. </p>
+<p>In case no criteria is specified, all non-processed data is fetched. If both criteria are specified, the one which first exceeds the threshold applies.</p>
+<h5 id="retry-mechanism">Retry mechanism</h5>
+<p>Allow to select failed batches of data assets for retry processing. Store the number of attempts for a batch of data assets. Allow a configurable retry count upon failure.</p>
+<h5 id="single-job-and-multiple-batches">Single job and multiple batches</h5>
+<p>Allow a single job to process multiple batches consecutively while specifying the total number of iterations. </p>
+<h4 id="concurrent-processing">Concurrent processing</h4>
+<p>Enable multiple jobs to process disjunct ranges of a single type of data assets simultaneously. This allows to parallize jobs with predictable workloads to quickly process large amounts of backlogs.</p>
+<h4 id="observability_1">Observability</h4>
+<h3 id="non-functional-requirements">Non-functional requirements</h3>
+<h4 id="usability">Usability</h4>
+<h4 id="reliability">Reliability</h4>
+<h4 id="performance">Performance</h4>
+<h4 id="security">Security</h4>
+<h4 id="maintainability">Maintainability</h4>
+<h3 id="interfaces">Interfaces</h3>
+<h4 id="programmatic-api">Programmatic API</h4>
+<h4 id="command-line-client-cli">Command Line Client CLI</h4>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
