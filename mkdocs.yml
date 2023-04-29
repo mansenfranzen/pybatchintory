@@ -1,0 +1,10 @@
+site_name: pybatchintory
+nav:
+    - Home: index.md
+    - Developer: developer.md
+theme: material
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
