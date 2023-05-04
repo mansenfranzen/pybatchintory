@@ -14,8 +14,6 @@ sqlalchemy = [
   ]
 pandas = "^1.2"
 pydantic = "^1.8"
-mkdocs = "^1.4.2"
-mkdocs-material = "^9.1.8"
 
 [tool.poetry.group.interactive]
 optional = true
@@ -30,6 +28,8 @@ ipykernel = [
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.2"
 packaging = "^23.0"
+mkdocs = "^1.4.2"
+mkdocs-material = "^9.1.8"
 
 [tool.poetry.group.postgresql.dependencies]
 psycopg2-binary = "^2.9.5"
