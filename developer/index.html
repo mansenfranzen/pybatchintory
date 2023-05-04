@@ -1,167 +1,893 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Developer - pybatchintory</title>
-    <link rel="stylesheet" href="../css/theme.css" />
-    <link rel="stylesheet" href="../css/theme_extra.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
     
-      <script>
-        // Current page data
-        var mkdocs_page_name = "Developer";
-        var mkdocs_page_input_path = "developer.md";
-        var mkdocs_page_url = null;
-      </script>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.8">
     
-    <script src="../js/jquery-3.6.0.min.js" defer></script>
-    <!--[if lt IE 9]>
-      <script src="../js/html5shiv.min.js"></script>
-    <![endif]-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
-      <script>hljs.initHighlightingOnLoad();</script> 
-</head>
+    
+      
+        <title>Developer - pybatchintory</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ded33207.min.css">
+      
+      
 
-<body class="wy-body-for-nav" role="document">
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
-    <div class="wy-side-scroll">
-      <div class="wy-side-nav-search">
-          <a href=".." class="icon icon-home"> pybatchintory
-        </a><div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
-  </form>
-</div>
-      </div>
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#requirements-specification" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
-                </li>
-              </ul>
-              <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="./">Developer</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#general-description">General description</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#purpose">Purpose</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#rationale">Rationale</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#incremental-processing">Incremental processing</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#backfilling">Backfilling</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#predictable-workloads">Predictable Workloads</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#observability">Observability</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#terminiology">Terminiology</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#precondition">Precondition</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#limitation">Limitation</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#user-stories">User Stories</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#specific-requirements">Specific requirements</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#terminiology_1">Terminiology</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#functional-requirements">Functional requirements</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#acquire-release">Acquire &amp; Release</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#batch-generation">Batch Generation</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#concurrent-processing">Concurrent processing</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#observability_1">Observability</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#non-functional-requirements">Non-functional requirements</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#usability">Usability</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#reliability">Reliability</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#performance">Performance</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#security">Security</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#maintainability">Maintainability</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#interfaces">Interfaces</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#programmatic-api">Programmatic API</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#command-line-client-cli">Command Line Client CLI</a>
-    </li>
-        </ul>
-    </li>
-        </ul>
-    </li>
-    </ul>
-                </li>
-              </ul>
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="pybatchintory" class="md-header__button md-logo" aria-label="pybatchintory" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pybatchintory
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Developer
+            
+          </span>
+        </div>
       </div>
     </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="..">pybatchintory</a>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
         
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
       </nav>
-      <div class="wy-nav-content">
-        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
-      <li>Developer</li>
-    <li class="wy-breadcrumbs-aside">
-    </li>
-  </ul>
-  <hr/>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-            <div class="section" itemprop="articleBody">
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
               
-                <h1 id="requirements-specification">Requirements specification</h1>
-<p>This document outlines the requirements specification for a software project named "pybatchintory". It focuses on <em>what</em> the software is supposed to accomplish. The problem statement is formulated and the added value is justified. Functional and non functional requirements are derived. This is primarily intended for developers, architects and stakeholders.</p>
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="pybatchintory" class="md-nav__button md-logo" aria-label="pybatchintory" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    pybatchintory
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Developer
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Developer
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#general-description" class="md-nav__link">
+    General description
+  </a>
+  
+    <nav class="md-nav" aria-label="General description">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#purpose" class="md-nav__link">
+    Purpose
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rationale" class="md-nav__link">
+    Rationale
+  </a>
+  
+    <nav class="md-nav" aria-label="Rationale">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#incremental-processing" class="md-nav__link">
+    Incremental processing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backfilling" class="md-nav__link">
+    Backfilling
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configurable-workloads" class="md-nav__link">
+    Configurable Workloads
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#observability" class="md-nav__link">
+    Observability
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#terminiology" class="md-nav__link">
+    Terminiology
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#precondition" class="md-nav__link">
+    Precondition
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limitation" class="md-nav__link">
+    Limitation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-stories" class="md-nav__link">
+    User Stories
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#specific-requirements" class="md-nav__link">
+    Specific requirements
+  </a>
+  
+    <nav class="md-nav" aria-label="Specific requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#terminiology_1" class="md-nav__link">
+    Terminiology
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#functional-requirements" class="md-nav__link">
+    Functional requirements
+  </a>
+  
+    <nav class="md-nav" aria-label="Functional requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data-asset-selection" class="md-nav__link">
+    Data Asset Selection
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-asset-filtering" class="md-nav__link">
+    Data Asset Filtering
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#incremental-processing_1" class="md-nav__link">
+    Incremental processing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backfilling_1" class="md-nav__link">
+    Backfilling
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chronology" class="md-nav__link">
+    Chronology
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-workloads" class="md-nav__link">
+    Configure workloads
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#retry-mechanism" class="md-nav__link">
+    Retry mechanism
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#single-job-and-multiple-batches" class="md-nav__link">
+    Single job and multiple batches
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recursivity" class="md-nav__link">
+    Recursivity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#concurrent-processing" class="md-nav__link">
+    Concurrent processing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#observability_1" class="md-nav__link">
+    Observability
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#non-functional-requirements" class="md-nav__link">
+    Non-functional requirements
+  </a>
+  
+    <nav class="md-nav" aria-label="Non-functional requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#usability" class="md-nav__link">
+    Usability
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reliability" class="md-nav__link">
+    Reliability
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    Performance
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security" class="md-nav__link">
+    Security
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maintainability" class="md-nav__link">
+    Maintainability
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interfaces" class="md-nav__link">
+    Interfaces
+  </a>
+  
+    <nav class="md-nav" aria-label="Interfaces">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#programmatic-api" class="md-nav__link">
+    Programmatic API
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-line-client-cli" class="md-nav__link">
+    Command Line Client CLI
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#general-description" class="md-nav__link">
+    General description
+  </a>
+  
+    <nav class="md-nav" aria-label="General description">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#purpose" class="md-nav__link">
+    Purpose
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rationale" class="md-nav__link">
+    Rationale
+  </a>
+  
+    <nav class="md-nav" aria-label="Rationale">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#incremental-processing" class="md-nav__link">
+    Incremental processing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backfilling" class="md-nav__link">
+    Backfilling
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configurable-workloads" class="md-nav__link">
+    Configurable Workloads
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#observability" class="md-nav__link">
+    Observability
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#terminiology" class="md-nav__link">
+    Terminiology
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#precondition" class="md-nav__link">
+    Precondition
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limitation" class="md-nav__link">
+    Limitation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-stories" class="md-nav__link">
+    User Stories
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#specific-requirements" class="md-nav__link">
+    Specific requirements
+  </a>
+  
+    <nav class="md-nav" aria-label="Specific requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#terminiology_1" class="md-nav__link">
+    Terminiology
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#functional-requirements" class="md-nav__link">
+    Functional requirements
+  </a>
+  
+    <nav class="md-nav" aria-label="Functional requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data-asset-selection" class="md-nav__link">
+    Data Asset Selection
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-asset-filtering" class="md-nav__link">
+    Data Asset Filtering
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#incremental-processing_1" class="md-nav__link">
+    Incremental processing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backfilling_1" class="md-nav__link">
+    Backfilling
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chronology" class="md-nav__link">
+    Chronology
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-workloads" class="md-nav__link">
+    Configure workloads
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#retry-mechanism" class="md-nav__link">
+    Retry mechanism
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#single-job-and-multiple-batches" class="md-nav__link">
+    Single job and multiple batches
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recursivity" class="md-nav__link">
+    Recursivity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#concurrent-processing" class="md-nav__link">
+    Concurrent processing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#observability_1" class="md-nav__link">
+    Observability
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#non-functional-requirements" class="md-nav__link">
+    Non-functional requirements
+  </a>
+  
+    <nav class="md-nav" aria-label="Non-functional requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#usability" class="md-nav__link">
+    Usability
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reliability" class="md-nav__link">
+    Reliability
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    Performance
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security" class="md-nav__link">
+    Security
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maintainability" class="md-nav__link">
+    Maintainability
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interfaces" class="md-nav__link">
+    Interfaces
+  </a>
+  
+    <nav class="md-nav" aria-label="Interfaces">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#programmatic-api" class="md-nav__link">
+    Programmatic API
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-line-client-cli" class="md-nav__link">
+    Command Line Client CLI
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="requirements-specification">Requirements specification</h1>
+<p>This document outlines the requirements specification for a software project named <code>pybatchintory</code>. It focuses on <em>what</em> the software is supposed to accomplish. </p>
+<p>The problem statement is formulated and the added value is justified. Functional and non-functional requirements are derived. This is primarily intended for developers, architects and stakeholders.</p>
 <h2 id="general-description">General description</h2>
 <h3 id="purpose">Purpose</h3>
-<p><em>pybatchintory</em> represents a middleware for batch processing data pipelines. It may greatly improve performance, lower maintenance and enhance observability by enabling the following features:</p>
+<p><code>pybatchintory</code> represents a middleware for batch processing data pipelines. It reduces maintenance efforts, improves performance and enhances observability by enabling following features:</p>
 <ul>
-<li>Incremental processing: Process only new, unseen data assets avoiding recomputation.</li>
-<li>Backfilling: Reprocess historical data assets in a configurable and automated fashion without manual intervention.</li>
-<li>Predictable workloads: Specify the amount of data assets to be processed to match compute resources for best efficiency.</li>
-<li>Transparency: Enrich processed data assets with job details like identifier, configuration and timestamp.</li>
+<li><strong>Incremental processing</strong>: Process only new, unseen data assets without custom bookmarking logic.</li>
+<li><strong>Backfilling</strong>: Reprocess historical data assets in a configurable and automated manner without manual intervention.</li>
+<li><strong>Configurable workloads</strong>: Define the amount of data assets to be processed for best predictability and efficiency.</li>
+<li><strong>Transparency</strong>: Enrich processed data assets with job details like timestamp, identifier and parametrization.</li>
 </ul>
-<p>From a high level perspective, a batch processing application (e.g., Apache Spark or Dask) delegates the generation of batches of data assets to <em>pybatchintory</em>. Conceptionally, <em>pybatchintory</em> only leverages the metadata about data assets and does not read their actual content.</p>
+<p>In order to leverage the above features, batch processing applications delegate the responsibility of generating batches of data assets to <code>pybatchintory</code>.</p>
+<p>The primary use case are <strong>file-based batch processing pipelines</strong>. For example, Parquet files are stored in a cloud object store like Azure Blob and need to be processed via Apache Spark twice a day.</p>
+<p>However, <code>pybatchintory</code> is not limited on any specific type or format because it is data asset agnostic. It is possible to generate batches of work that represent partitioning keys in table formats or distributed databases. </p>
+<p>Conceptionally, <code>pybatchintory</code> provides an API to generate and interact with batches of data assets while maintaining state and hiding implementation details. Only metadata about data assets is consumed while the actual data is not read.</p>
 <h3 id="rationale">Rationale</h3>
-<p>The following section summarizes the contextual background from which <em>pybatchintory</em> originates with its purpose and added value.  </p>
+<p>The following section summarizes the contextual background from which <code>pybatchintory</code> originates with its purpose and added value.  </p>
 <h4 id="incremental-processing">Incremental processing</h4>
-<p>While incremental processing is supported in stream processing frameworks by design, this functionality is rarely available in batch processing frameworks. Only very few off-the-shelf solutions provide easy-to-use abstractions to handle incremental batch semantics (e.g., AWS Glue Bookmarks). More often than not, custom non-standard solutions are used in production environments. Interestingly, these rely on timestamp watermarks or offsets which closely resemble what stream processing frameworks offer out-of-the-box.</p>
+<p>Incremental processing greatly improves data pipeline performance by only processing unseen data assets. This prevents costly reprocessing of entire datasets. </p>
+<p>While incremental processing is supported in stream processing frameworks by design (e.g. Storm or Flink), this functionality is rarely available in batch processing frameworks. Only very few off-the-shelf solutions provide easy-to-use abstractions to handle incremental batch semantics (e.g., <a href="https://docs.aws.amazon.com/glue/latest/dg/monitor-continuations.html">AWS Glue Bookmarks</a>). More often than not, custom solutions are used in production environments. Typically, these rely on timestamp comparisons or manually maintained offsets which closely resembles what stream processing frameworks offer out-of-the-box.</p>
+<details class="question">
+<summary>Why not use stream instead of batch processing?</summary>
+<p>For non-time-sensitive tasks, batch processing provides two significant advantages over stream processing:</p>
+<ol>
+<li>
+<p><strong>Resource efficiency</strong>: Batch processing allows for aggregation of large amounts of data at once, utilizing compute and memory resources more effectively while being more cost-effective overall.</p>
+</li>
+<li>
+<p><strong>Managing complexity</strong>: Batch processing is easer to reason about because data is bounded and finite. Moreover, implementing complex logic on unbounded streams of data is very challenging to develop and maintain.</p>
+</li>
+</ol>
+</details>
+<details class="question">
+<summary>What are other solutions for incremental batch processing?</summary>
+<p>More solutions exist which offer incremental processing. However, they tend fall short in one regard or the other.</p>
+<ul>
+<li><strong>Databrick</strong>'s <a href="https://docs.databricks.com/ingestion/auto-loader/index.html">Autoloader</a> enables incremental processing of files in cloud objects stores, too. However, it does not support batch processing but only integrates with <a href="https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html">Spark Streaming</a> and its associated <a href="https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#unsupported-operations">limitations</a>.</li>
+<li>Likewise, <strong>Flink</strong>'s <a href="https://nightlies.apache.org/flink/flink-docs-release-1.17/docs/connectors/datastream/filesystem/#bounded-and-unbounded-streams">unbounded file data source</a> continously monitors for new files at a given location. However, downstream computations using this data source can only run in unbounded, <a href="https://nightlies.apache.org/flink/flink-docs-master/docs/dev/datastream/execution_mode/#when-canshould-i-use-batch-execution-mode">streaming execution mode</a>.</li>
+<li><strong>Apache Hudi</strong>'s <a href="https://hudi.apache.org/docs/hoodie_deltastreamer/">DeltaStreamer</a> provides incremental processing semantics, too. Data can be ingested from various sources into Hudi tables only. Moreover, <a href="https://hudi.apache.org/docs/next/transforms/">transformers</a> allow to implement custom wrangling logic. However, this solution is limited to Java and may not be suitable for pipelines with high complexity.</li>
+</ul>
+</details>
 <h4 id="backfilling">Backfilling</h4>
-<p>Reprocessing of data is not an uncommon theme. Bugs need to be fixed in production pipelines and new features have to be computed for historical data, too. However, first class support for such backfilling scenarios is currently not available. In production environments, large volumes of data accumulate over time which eventually become costly and error prone to be processed all at once. Hence, manual planning and execution is often required to create processable chunks of work.</p>
-<h4 id="predictable-workloads">Predictable Workloads</h4>
-<p>Data assets are not generated evenly over time. Rather, the data generation process often exhibits seasonality and spikes. If auto-scaling is not available, processing applications may drastically drop in performance (e.g., insufficient memory -&gt; disk spills) or may even fail completely (e.g., out of memory error). Even if auto-scaling is enabled, performance degradation is  likely because ideal parallelization is almost never possible in distributed systems. Currently, batch processing frameworks don't provide native support to limit the amount of data to be processed.</p>
+<p>Reprocessing of data is not an uncommon theme. Bugs need to be fixed in production pipelines not just for future but also for existing past data. Added features such as new KPIs need to be made available not just from now on but also for the data of recent years. Hence, historical data needs to be reprocessed. </p>
+<p>However, first class support for such scenarios is currently not available. Processing all historical data at once can eventually become very costly and error prone because the accumulated volume of data may exceed a threshold of feasibility. Hence, manual planning and execution is often required to create processable chunks of work.</p>
+<h4 id="configurable-workloads">Configurable Workloads</h4>
+<p>Data assets are not generated evenly over time. Rather, the data generation process often exhibits seasonality and spikes resulting in greatly differing volumes of data per time interval. If auto-scaling is not available, processing applications may drastically drop in performance (e.g., due to insufficient memory forcing disk spills) or may even fail completely (e.g., out of memory error). Even with auto-scaling being enabled, performance degradation is likely because perfect parallelization via horizontal scaling is almost never possible in distributed systems. </p>
+<p>A simple and effective solution is to limit the amount of data to be processed at once by a single batch job. However, batch processing frameworks don't provide native support this functionality, yet.</p>
 <h4 id="observability">Observability</h4>
-<p>Frequently, doubts arise regarding data integrity and reliabilty. Customers may question results presented in a dashboard such as missing data. Hence, underlying data pipelines need to be easily inspectable to verify that all available data assets have been processed correctly. Moreover, you may need to identify when a certain data asset was processed by a certain processing application. While the former scenario is widely supported, there exist little to no solutions for the latter one.</p>
+<p>Frequently, doubts arise regarding data integrity and reliability. Customers may question results shown in an end user dashboard. To be able to troubleshoot, underlying data pipelines need to be easily inspectable to verify that all available data assets have been processed correctly. Moreover, a certain data asset needs to be traceable in regard to when it was processed by which processing application. </p>
 <h3 id="terminiology">Terminiology</h3>
+<p>This section defines core concepts and provides a high level overview:</p>
+<p><img alt="architecture" src="../material/architecture.svg" /></p>
+<ul>
+<li><strong>Processing application</strong>: Resembles the application that actually reads and processes the content of data assets. It utilizes <code>pybatchintory</code> to generate batches of data assets.</li>
+<li><strong>Batch configuration:</strong> Specifies the characteristics of the batch generation process.</li>
+<li><strong>Jobs:</strong> Represent one or more executions of the processing application. Each instantiation invokes <code>pybatchintory</code> to fetch batches of data assets.</li>
+<li><strong>Batches:</strong> Contain references to one or more data assets.</li>
+<li><strong>Batch generation:</strong> Resembles the process of generating new batches of data assets. Its result is determined by the <em>batch configuration</em>, the <em>inventory table</em> and the <em>meta table</em>. It embodies the core logic enabling incremental and backfilling semantics with predictable workloads. </li>
+<li><strong>Inventory table:</strong> Represents the backend table of <code>pybatchintory</code>. It maintains state of historically executed jobs and processed data items.</li>
+<li><strong>Meta table:</strong> Contains meta information about data assets like file location and size. <code>pybatchintory</code> leverages it to generate batches of data assets.</li>
+<li><strong>Data assets:</strong> Represent arbitrary processable units of work. Typically, these are Parquet or JSON files stored in an object store such as AWS S3 or Azure Blob. However, since <code>pybatchintory</code> makes no strong assumptions about them, it can be anything consumable by a processing application.</li>
+</ul>
 <h3 id="precondition">Precondition</h3>
 <p>In order to generate batches of data assets, the existence of a metadata table is mandatory. At minimum, it needs to contain a reference to the data item (e.g, file location) and a primary key as unique row identifier. Since <em>pybatchintory</em> generates chronologically sorted ranges of data items, the primary key needs to chronologically sorted, too.</p>
 <h3 id="limitation">Limitation</h3>
@@ -179,36 +905,34 @@
 <h3 id="terminiology_1">Terminiology</h3>
 <p>This section extends the existing terminiology with more detailed concepts which are relevant for the specific requirements.</p>
 <ul>
-<li>Backlog: Describes the remaining amount of unprocessed data assets for a given job.</li>
-<li>Data asset type: Summarizes data assets that semantically belong together such as a directory of parquet files containing IoT data accross various devices and time ranges.</li>
-<li>Batch window: Specifies the range of data assets to be included in the batch generation process. Data assets outside this window are not relevant for the batch generation process. The window is defined by a lower and upper boundary which define the first and last data assets to be included, respectively.</li>
-<li>Batch status: Defines the possible states of a batch of data assets. This includes "processing", "succeeded" and "failed".</li>
+<li><strong>Backlog</strong>: Describes the remaining amount of unprocessed data assets for a given job.</li>
+<li><strong>Data asset type</strong>: Summarizes data assets that semantically belong together such as a directory of parquet files containing IoT data accross various devices and time ranges.</li>
+<li><strong>Batch window</strong>: Specifies the range of data assets to be included in the batch generation process. Data assets outside this window are not relevant for the batch generation process. The window is defined by a lower and upper boundary which define the first and last data assets to be included, respectively.</li>
+<li><strong>Batch status</strong>: Defines the possible states of a batch of data assets. This includes "processing", "succeeded" and "failed".</li>
 </ul>
 <h3 id="functional-requirements">Functional requirements</h3>
-<h4 id="acquire-release">Acquire &amp; Release</h4>
-<p>Before a job starts processing data assets, it has to acquire them. This marks these data assets as being reserved while preventing other jobs to simultaneously process them. Once the job has finished, it can release the of data assets with a given result status such as being succeeded or failed. </p>
-<h4 id="batch-generation">Batch Generation</h4>
-<p>This subsection represents the functionality that is required to generate a batch of data assets.</p>
-<h5 id="data-asset-selection">Data Asset Selection</h5>
+<h4 id="data-asset-selection">Data Asset Selection</h4>
 <p>Allow defining the metadata table that references the relevant data assets.</p>
-<h5 id="data-asset-filtering">Data Asset Filtering</h5>
+<h4 id="data-asset-filtering">Data Asset Filtering</h4>
 <p>Allow providing a filter condition to subset data assets from the metadata table. This is crucial in case the metadata table holds references to multiple data asset types.  The filtering method should be as flexible as possible to support a wide range of metadata table models.</p>
-<h5 id="incremental-processing_1">Incremental processing</h5>
+<h4 id="incremental-processing_1">Incremental processing</h4>
 <p>Allow fetching non-processed data assets with no upper boundary for the batch window. Hence, newly added data assets will be included from one job run to another. The total amount of relevant data assets is dynamic and changes over time.</p>
-<h5 id="backfilling_1">Backfilling</h5>
+<h4 id="backfilling_1">Backfilling</h4>
 <p>Allow fetching non-processed data assets with an upper boundary for the batch window. Hence, newly added data assets will be excluded from one job run to another. The total amount of relevant data assets is fixed and remains constant over time.</p>
-<h5 id="chronology">Chronology</h5>
+<h4 id="chronology">Chronology</h4>
 <p>Always fetch data assets in chronological order starting with the oldest ones. </p>
-<h5 id="predictable-workloads_1">Predictable workloads</h5>
+<h4 id="configure-workloads">Configure workloads</h4>
 <p>Allow to specify the maximum workload that a single job processes. This includes two possbile criteria. First, define the maximum number of data assets. Second, define the maximum weight as the total sum of data asset size. </p>
-<p>The weight criteria depends on the existance of a weight attribute being present in the metadata table. If not given, no weight can be computed. </p>
+<p>The weight criteria depends on the existence of a weight attribute being present in the metadata table. If not given, no weight can be computed. </p>
 <p>In case no criteria is specified, all non-processed data is fetched. If both criteria are specified, the one which first exceeds the threshold applies.</p>
-<h5 id="retry-mechanism">Retry mechanism</h5>
+<h4 id="retry-mechanism">Retry mechanism</h4>
 <p>Allow to select failed batches of data assets for retry processing. Store the number of attempts for a batch of data assets. Allow a configurable retry count upon failure.</p>
-<h5 id="single-job-and-multiple-batches">Single job and multiple batches</h5>
+<h4 id="single-job-and-multiple-batches">Single job and multiple batches</h4>
 <p>Allow a single job to process multiple batches consecutively while specifying the total number of iterations. </p>
+<h4 id="recursivity">Recursivity</h4>
 <h4 id="concurrent-processing">Concurrent processing</h4>
-<p>Enable multiple jobs to process disjunct ranges of a single type of data assets simultaneously. This allows to parallize jobs with predictable workloads to quickly process large amounts of backlogs.</p>
+<p>Enable multiple jobs to process disjunct ranges of a single type of data assets simultaneously. This allows to parallelize jobs with predictable workloads to quickly process large amounts of backlogs. </p>
+<p>Before a job starts processing data assets, it has to acquire them. This marks these data assets as being reserved while preventing other jobs to simultaneously process them. Once the job has finished, it can release the of data assets with a given result status such as being succeeded or failed. </p>
 <h4 id="observability_1">Observability</h4>
 <h3 id="non-functional-requirements">Non-functional requirements</h3>
 <h4 id="usability">Usability</h4>
@@ -219,47 +943,48 @@
 <h3 id="interfaces">Interfaces</h3>
 <h4 id="programmatic-api">Programmatic API</h4>
 <h4 id="command-line-client-cli">Command Line Client CLI</h4>
-              
+
+
+
+
+
+                
+              </article>
             </div>
-          </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <!-- Copyright etc -->
-  </div>
-
-  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-</footer>
+          
           
         </div>
-      </div>
-
-    </section>
-
-  </div>
-
-  <div class="rst-versions" role="note" aria-label="Versions">
-  <span class="rst-current-version" data-toggle="rst-current-version">
-    
-    
-      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-  </span>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
 </div>
-    <script>var base_url = '..';</script>
-    <script src="../js/theme_extra.js" defer></script>
-    <script src="../js/theme.js" defer></script>
-      <script src="../search/main.js" defer></script>
-    <script defer>
-        window.onload = function () {
-            SphinxRtdTheme.Navigation.enable(true);
-        };
-    </script>
-
-</body>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.51198bba.min.js"></script>
+      
+    
+  </body>
 </html>
