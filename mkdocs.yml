@@ -1,7 +1,10 @@
 site_name: pybatchintory
 nav:
   - Home: index.md
-  - Developer: developer.md
+  - Developer:
+    - Specification:
+      - developers/specification/requirements.md
+      - developers/specification/implementation.md
 theme: material
 
 markdown_extensions:

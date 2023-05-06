@@ -1,27 +1,27 @@
-# Requirements specification
+# Requirements
 
-This document outlines the requirements specification for a software project named `pybatchintory`. It focuses on *what* the software is supposed to accomplish. 
+This document outlines the requirements specification for a software project named `pybatchintory`. It focuses on **what** the software aims to accomplish opposed to *how* it is achieved (see [implementation specification](implementation.md)). 
 
-The problem statement is formulated and the added value is justified. Functional and non-functional requirements are derived. This is primarily intended for developers, architects and stakeholders.
+The problem statement is formulated and the added value is justified. Functional and non-functional requirements are derived. 
+
+The intended audience are primarily developers, engineers and architects.
 
 ## General description
 
 ### Purpose
 
-`pybatchintory` represents a middleware for batch processing data pipelines. It reduces maintenance efforts, improves performance and enhances observability by enabling following features:
+`pybatchintory` represents a middleware for batch processing data pipelines. It reduces maintenance efforts, improves performance and enhances observability by providing fist class support for following features:
 
 - **Incremental processing**: Process only new, unseen data assets without custom bookmarking logic.
 - **Backfilling**: Reprocess historical data assets in a configurable and automated manner without manual intervention.
 - **Configurable workloads**: Define the amount of data assets to be processed for best predictability and efficiency.
 - **Transparency**: Enrich processed data assets with job details like timestamp, identifier and parametrization.
 
-In order to leverage the above features, batch processing applications delegate the responsibility of generating batches of data assets to `pybatchintory`.
+Conceptionally, batch processing applications delegate the responsibility of generating batches of data assets to `pybatchintory` to leverage these features. `pybatchintory` provides an API to generate and interact with batches of data assets while maintaining state of historically processed data assets. Importantly, `pybatchintory` only consumes metadata about data assets while the actual data is not read.
 
-The primary use case are **file-based batch processing pipelines**. For example, Parquet files are stored in a cloud object store like Azure Blob and need to be processed via Apache Spark twice a day.
+The primary use case are **file-based batch processing pipelines**. A typical real world example are Parquet or JSON files which are continuously added to a cloud object store like Azure Blob or AWS S3. Periodically, these files need to processed in batches via a distributed computation framework like Apache Spark or Dask.
 
-However, `pybatchintory` is not limited on any specific type or format because it is data asset agnostic. It is possible to generate batches of work that represent partitioning keys in table formats or distributed databases. 
-
-Conceptionally, `pybatchintory` provides an API to generate and interact with batches of data assets while maintaining state and hiding implementation details. Only metadata about data assets is consumed while the actual data is not read.
+However, `pybatchintory` is not limited to any specific type or format because it is data asset agnostic. It is possible to generate batches of work that represent partitioning keys in table formats or distributed databases. 
 
 ### Rationale
 
@@ -31,7 +31,7 @@ The following section summarizes the contextual background from which `pybatchin
 
 Incremental processing greatly improves data pipeline performance by only processing unseen data assets. This prevents costly reprocessing of entire datasets. 
 
-While incremental processing is supported in stream processing frameworks by design (e.g. Storm or Flink), this functionality is rarely available in batch processing frameworks. Only very few off-the-shelf solutions provide easy-to-use abstractions to handle incremental batch semantics (e.g., [AWS Glue Bookmarks](https://docs.aws.amazon.com/glue/latest/dg/monitor-continuations.html)). More often than not, custom solutions are used in production environments. Typically, these rely on timestamp comparisons or manually maintained offsets which closely resembles what stream processing frameworks offer out-of-the-box.
+While incremental processing is supported in stream processing frameworks by design (e.g. Flink or Kafka Streams), this functionality is rarely available in batch processing frameworks. Only very few off-the-shelf solutions provide easy-to-use abstractions to handle incremental batch semantics (e.g., [AWS Glue Bookmarks](https://docs.aws.amazon.com/glue/latest/dg/monitor-continuations.html)). More often than not, custom solutions are used in production environments. Typically, these rely on timestamp comparisons or manually maintained offsets which closely resembles what stream processing frameworks offer out-of-the-box.
 
 ??? question "Why not use stream instead of batch processing?"
 
@@ -41,13 +41,13 @@ While incremental processing is supported in stream processing frameworks by des
     
     2. **Managing complexity**: Batch processing is easer to reason about because data is bounded and finite. Moreover, implementing complex logic on unbounded streams of data is very challenging to develop and maintain.
 
-??? question "What are other solutions for incremental batch processing?"
+??? question "What other solutions exist for incremental batch processing?"
 
     More solutions exist which offer incremental processing. However, they tend fall short in one regard or the other.
 
-    - **Databrick**'s [Autoloader](https://docs.databricks.com/ingestion/auto-loader/index.html) enables incremental processing of files in cloud objects stores, too. However, it does not support batch processing but only integrates with [Spark Streaming](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html) and its associated [limitations](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#unsupported-operations).
-    - Likewise, **Flink**'s [unbounded file data source](https://nightlies.apache.org/flink/flink-docs-release-1.17/docs/connectors/datastream/filesystem/#bounded-and-unbounded-streams) continously monitors for new files at a given location. However, downstream computations using this data source can only run in unbounded, [streaming execution mode](https://nightlies.apache.org/flink/flink-docs-master/docs/dev/datastream/execution_mode/#when-canshould-i-use-batch-execution-mode).
-    - **Apache Hudi**'s [DeltaStreamer](https://hudi.apache.org/docs/hoodie_deltastreamer/) provides incremental processing semantics, too. Data can be ingested from various sources into Hudi tables only. Moreover, [transformers](https://hudi.apache.org/docs/next/transforms/) allow to implement custom wrangling logic. However, this solution is limited to Java and may not be suitable for pipelines with high complexity.
+    - **Databrick**'s [Autoloader](https://docs.databricks.com/ingestion/auto-loader/index.html) enables incremental processing of files in cloud objects stores. However, this does not support batch processing but only integrates with [Spark Streaming](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html) and its associated [limitations](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#unsupported-operations).
+    - Likewise, **Flink**'s [unbounded file data source](https://nightlies.apache.org/flink/flink-docs-release-1.17/docs/connectors/datastream/filesystem/#bounded-and-unbounded-streams) continously monitors for new files at any given location. However, downstream computations using this data source can only run in unbounded, [streaming execution mode](https://nightlies.apache.org/flink/flink-docs-master/docs/dev/datastream/execution_mode/#when-canshould-i-use-batch-execution-mode) which does not leverage the benefits of batch processing.
+    - **Apache Hudi**'s [DeltaStreamer](https://hudi.apache.org/docs/hoodie_deltastreamer/) allows to incrementally ingest data from various sources into Hudi tables while applying custom [transformations](https://hudi.apache.org/docs/next/transforms/) on the raw data. While this approach supports batch processing, it only works for Hudi tables and is mainly intended for less complex ingestion use cases.
 
 #### Backfilling
 
