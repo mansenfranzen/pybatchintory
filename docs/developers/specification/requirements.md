@@ -17,9 +17,9 @@ The intended audience are primarily developers, engineers and architects.
 - **Configurable workloads**: Define the amount of data assets to be processed for best predictability and efficiency.
 - **Transparency**: Enrich processed data assets with job details like timestamp, identifier and parametrization.
 
-Conceptionally, batch processing applications delegate the responsibility of generating batches of data assets to `pybatchintory` to leverage these features. `pybatchintory` provides an API to generate and interact with batches of data assets while maintaining state of historically processed data assets. Importantly, `pybatchintory` only consumes metadata about data assets while the actual data is not read.
+Conceptionally, batch processing applications delegate the responsibility of generating batches of data assets to `pybatchintory` to leverage these features. `pybatchintory` provides an API to generate batches of data assets while maintaining state of historically processed data assets. Importantly, `pybatchintory` only consumes metadata about data assets while the actual data is not read.
 
-The primary use case are **file-based batch processing pipelines**. A typical real world example are Parquet or JSON files which are continuously added to a cloud object store like Azure Blob or AWS S3. Periodically, these files need to processed in batches via a distributed computation framework like Apache Spark or Dask.
+The primary use case are **file-based batch processing pipelines**. A typical real world example are Parquet or JSON files which are continuously added to a cloud object store like Azure Blob or AWS S3. Periodically, these files require batch processing via a distributed computation framework like Apache Spark or Dask.
 
 However, `pybatchintory` is not limited to any specific type or format because it is data asset agnostic. It is possible to generate batches of work that represent partitioning keys in table formats or distributed databases. 
 
@@ -39,11 +39,11 @@ While incremental processing is supported in stream processing frameworks by des
 
     1. **Resource efficiency**: Batch processing allows for aggregation of large amounts of data at once, utilizing compute and memory resources more effectively while being more cost-effective overall.
     
-    2. **Managing complexity**: Batch processing is easer to reason about because data is bounded and finite. Moreover, implementing complex logic on unbounded streams of data is very challenging to develop and maintain.
+    2. **Managing complexity**: Batch processing is easer to reason about because data is bounded and finite. Moreover, implementing complex logic on unbounded, infinite streams of data is very challenging to develop and maintain.
 
 ??? question "What other solutions exist for incremental batch processing?"
 
-    More solutions exist which offer incremental processing. However, they tend fall short in one regard or the other.
+    The following is a non-exhaustive list of alternative solutions which tend fall short in one regard or the other:
 
     - **Databrick**'s [Autoloader](https://docs.databricks.com/ingestion/auto-loader/index.html) enables incremental processing of files in cloud objects stores. However, this does not support batch processing but only integrates with [Spark Streaming](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html) and its associated [limitations](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#unsupported-operations).
     - Likewise, **Flink**'s [unbounded file data source](https://nightlies.apache.org/flink/flink-docs-release-1.17/docs/connectors/datastream/filesystem/#bounded-and-unbounded-streams) continously monitors for new files at any given location. However, downstream computations using this data source can only run in unbounded, [streaming execution mode](https://nightlies.apache.org/flink/flink-docs-master/docs/dev/datastream/execution_mode/#when-canshould-i-use-batch-execution-mode) which does not leverage the benefits of batch processing.
@@ -51,36 +51,40 @@ While incremental processing is supported in stream processing frameworks by des
 
 #### Backfilling
 
-Reprocessing of data is not an uncommon theme. Bugs need to be fixed in production pipelines not just for future but also for existing past data. Added features such as new KPIs need to be made available not just from now on but also for the data of recent years. Hence, historical data needs to be reprocessed. 
+Data reprocessing is not an uncommon theme. Errors need to be fixed in production pipelines for both past and future data. Likewise, new features such as novel KPIs typically need to be made available for recent years, too.
 
-However, first class support for such scenarios is currently not available. Processing all historical data at once can eventually become very costly and error prone because the accumulated volume of data may exceed a threshold of feasibility. Hence, manual planning and execution is often required to create processable chunks of work.
+However, first class support for such scenarios is currently not available. Processing all historical data at once can prove prohibitively expensive and susceptible to errors, as the cumulative data volume may surpass manageable limits. Hence, manual planning and execution is often required to create processable chunks of work.
 
 #### Configurable Workloads
 
-Data assets are not generated evenly over time. Rather, the data generation process often exhibits seasonality and spikes resulting in greatly differing volumes of data per time interval. If auto-scaling is not available, processing applications may drastically drop in performance (e.g., due to insufficient memory forcing disk spills) or may even fail completely (e.g., out of memory error). Even with auto-scaling being enabled, performance degradation is likely because perfect parallelization via horizontal scaling is almost never possible in distributed systems. 
+Data assets are generated inconsistently over time, often displaying seasonality and fluctuations that result in varying data volumes per time interval. In the absence of auto-scaling, processing applications may experience significant performance degradation (e.g., due to inadequate memory causing disk spills) or outright failure (e.g., memory exhaustion). Even when auto-scaling is enabled, perfect parallelization through horizontal scaling is rarely achievable in distributed systems, leading to performance issues.
 
-A simple and effective solution is to limit the amount of data to be processed at once by a single batch job. However, batch processing frameworks don't provide native support this functionality, yet.
+A straightforward yet efficacious solution is in limiting the data volume processed by a single batch job. However, native support for this functionality is only rarely available in batch processing frameworks (e.g., [AWS Glue Workload Partitioning](https://docs.aws.amazon.com/glue/latest/dg/bounded-execution.html)).
 
 #### Observability
 
-Frequently, doubts arise regarding data integrity and reliability. Customers may question results shown in an end user dashboard. To be able to troubleshoot, underlying data pipelines need to be easily inspectable to verify that all available data assets have been processed correctly. Moreover, a certain data asset needs to be traceable in regard to when it was processed by which processing application. 
-
+Often, concerns emerge about data integrity and reliability. Consumers question results displayed in an end user dashboards. To facilitate troubleshooting, it is imperative that underlying data pipelines remain readily inspectable, ensuring the accurate processing of all available data assets. Furthermore, individual data assets must be traceable concerning the processing application and the specific time at which they were processed.
 
 ### Terminiology
 
-This section defines core concepts and provides a high level overview:
+This section defines core concepts which are used throughout this document:
 
-![architecture](material/architecture.svg)
+![architecture](../../material/architecture.svg)
 
-- **Processing application**: Resembles the application that actually reads and processes the content of data assets. It utilizes `pybatchintory` to generate batches of data assets.
-- **Batch configuration:** Specifies the characteristics of the batch generation process.
-- **Jobs:** Represent one or more executions of the processing application. Each instantiation invokes `pybatchintory` to fetch batches of data assets.
-- **Batches:** Contain references to one or more data assets.
-- **Batch generation:** Resembles the process of generating new batches of data assets. Its result is determined by the *batch configuration*, the *inventory table* and the *meta table*. It embodies the core logic enabling incremental and backfilling semantics with predictable workloads. 
-- **Inventory table:** Represents the backend table of `pybatchintory`. It maintains state of historically executed jobs and processed data items.
-- **Meta table:** Contains meta information about data assets like file location and size. `pybatchintory` leverages it to generate batches of data assets.
-- **Data assets:** Represent arbitrary processable units of work. Typically, these are Parquet or JSON files stored in an object store such as AWS S3 or Azure Blob. However, since `pybatchintory` makes no strong assumptions about them, it can be anything consumable by a processing application.
-
+- **Batch Processing Application**: Refers to the application responsible for processing data assets, encompassing the core business logic. It relies on `pybatchintory` for generating batches of data assets.
+- **Batch Generation Configuration:** Dictates the methodology for generating batches of data assets, outlining incremental, backfilling, and configurable workload semantics.
+    - **Window**: Determines the scope of data assets incorporated in the batch generation process, excluding data assets outside this range. The window is delimited by lower and upper boundaries, which indicate the first and last data assets to be included, respectively.
+    - **Workload**: Describes the amount of data assets to be processed.
+- **Batch Generation:** Represents the procedure of creating batches of data assets, determined by the batch generation configuration, inventory table, and meta table. The output is a data asset batch.
+- **Batch:** Comprises references to one or more data assets.
+- **Batch Status**: Enumerates the potential states of a data asset batch, encompassing *synced*, *processing*, *succeeded*, and *failed*.
+- **Data Asset:** Denotes a versatile, processable work unit, commonly a single file, but may also encompass partitions, keys, or rows.
+- **Data Asset Type**: Categorizes semantically related data assets, such as a directory of Parquet files containing IoT data or a directory of CSV files containing ERP data.
+- **Job:** Characterizes a single execution of the batch processing application, with each instance invoking `pybatchintory` to obtain one or more batches of data assets.
+- **Job Identity:** Every job is equipped with an identifier and a reference to a data asset type. Both constitute the job identity. Jobs with the same job identify belong together and share the history of processed data assets. A single batch processing application may exhibit multiple job identities for separate data asset types or even different incremental and backfilling strategies.
+- **Job Backlog**: Represents the remaining quantity of unprocessed data assets for a specific job identity.
+- **Inventory table:** Serves as the `pybatchintory` backend table, preserving the state of executed jobs and batches of data items.
+- **Meta table:** Stores metadata about data assets, such as file location and size, enabling `pybatchintory` to generate data asset batches.
 
 ### Precondition
 
@@ -88,7 +92,7 @@ In order to generate batches of data assets, the existence of a metadata table i
 
 ### Limitation
 
-The batch generation process will only support consecutive data assets in chronologically increasing order. This greatly reduces complextiy and simplifies the implementation. Future versions may loosen this restriction.
+The batch generation process will only support consecutive data assets in chronologically increasing order. This greatly reduces complexity and simplifies the implementation. Future versions may loosen this restriction.
 
 ### User Stories
 
